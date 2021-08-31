@@ -6,9 +6,12 @@ By Ben McCarty (bmccarty505@gmail.com)'''
 
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
 import statsmodels as stats
+
+import matplotlib.pyplot as plt
+import matplotlib.colors as col
+import seaborn as sns
+import plotly.express as px
 
 ## 
 def sort_report(Source, Sort_by, Show_Only_Missing = False, Drop_Cols = False, Cols = ['N/A - Specify Columns'], Highlight_All=False, Ascending_Values = False, Color='#d65f5f'):
@@ -86,7 +89,7 @@ def find_outliers_IQR(data):
     idx_outliers =(data < (q1-thresh)) | (data > (q3+thresh))
     return idx_outliers
 
-def feature_vis(data, x, y = 'price', categorical = False, kde = True):
+def feature_vis(data, x, y, categorical = False, kde = True):
     """
     Prints the selected Series for reference.
     
@@ -210,6 +213,7 @@ def report_df(dataframe):
         * Number of unique values
         * Number of NaN values
         * Percent of NaN values
+        * statistics via .describe()
 
     Args:
         dataframe ([pd.DataFrame): Source DataFrame for summary
@@ -236,3 +240,98 @@ def plot_boxes(data, x_label, y_label, suptitle, figsize=(13,8)):
     ax.set_ylabel(y_label)
     plt.suptitle(suptitle, size = 18)
     plt.tight_layout()
+
+    return
+
+def explore_feature(dataframe, column_name, width = 600, height=400, plot_type = None,
+                    marginal_x=None, marginal_y = None,target_feature = None,
+                    plot_label = None, plot_title=None):
+
+    """Generates a dataframe containing details about the selected feature. 
+    Offers options to produce a Plotly Express plot: histogram, box, scatter (w/ regression line),
+    and options to include marginal plots
+
+    Args:
+        dataframe (DataFrame): Data source
+
+        column_name (str): Column/feature name
+
+        width (int, optional): Plot width. Defaults to 600.
+
+        height (int, optional): Plot height. Defaults to 400.
+        
+        plot_type (str, optional): One of "histogram," "box," or "scatter." Defaults to None.
+
+        marginal_x (string, one of 'rug', 'box', 'violin', 'histogram'): Generate a Plotly Express plot on the marginal x axis. Defaults to None.
+        
+        marginal_y (string, one of 'rug', 'box', 'violin', 'histogram'): Generate a Plotly Express plot on the marginal y axis. Defaults to None.
+        
+        target_feature (str, optional): Target feature to use as "color" parameter. Defaults to None.
+        
+        plot_label (str, optional): Plot x-label; dictionary of column name and desired label. Defaults to None.
+        
+        plot_title (str, optional): Plot title. Defaults to None.
+      
+    """
+    print('\n|','---'*9,'Feature Details','---'*10+'-','|\n')    
+
+    stats = dataframe[column_name].describe()
+    stats = pd.DataFrame(stats)
+    stats['report'] = 'Stats'
+
+    value_counts = dataframe[column_name].value_counts(1,dropna=False)
+    value_counts = pd.DataFrame(value_counts)
+    value_counts['report'] = 'Counts'
+
+    df = pd.concat([stats, value_counts], axis=0, keys=['Statistics', 'Value_Counts']).drop(columns='report')
+
+    ## Formatting code adapted from: https://stackoverflow.com/questions/59769161/python-color-pandas-dataframe-based-on-multiindex
+
+    ## Setting RGBA values for blue, orange
+    colors = {'Statistics': (76, 120, 168, 1), 'Value_Counts': (245, 133, 24, 1)}
+
+    ## Setting full/quarter alpha levels for colors 
+    c1 = {k: (r,g,b, .50) for k, (r,g,b,a) in colors.items()}
+    c2 = {k: (r,g,b, 0.25) for k, (r,g,b,a) in colors.items()}
+
+    ## Get values of first level of multi-index
+    idx = df.index.get_level_values(0)
+
+    ## Set CSS for first level
+    css = [{'selector': f'.row{i}.level0', 
+            'props': [('background-color', f'rgba{c1[j]}')]} for i,j in enumerate(idx)]
+
+    ## Counter per first level for pair and unpair coloring
+    zipped = zip(df.groupby(idx).cumcount(), enumerate(idx))
+
+    # 
+    css1 = [{'selector': f'.row{i}', 'props': [('background-color', f'rgba{c1[j]}')]} 
+        if v % 2 == 0 
+        else {'selector': f'.row{i}', 'props': [('background-color', f'rgba{c2[j]}')]} 
+        for v,(i, j) in zipped]
+
+
+    display(df.style.set_table_styles(css1 + css))
+
+    print('\n\n|','---'*9,'Visualizing Results','---'*9,'|')
+
+    if plot_type is 'histogram':
+        fig = px.histogram(dataframe,column_name,
+                   color=target_feature,
+                   marginal = marginal_x,
+                   labels={column_name: plot_label}, 
+                   title=plot_title,
+                   width = width, height=height)
+        fig.update_layout(bargap=0.2)
+        fig.show()
+
+    if plot_type is 'box':
+        fig = px.box(dataframe,column_name,
+                    color=target_feature,
+                    labels={column_name: plot_label},
+                    title=plot_title,
+                    width = width, height=height)
+        fig.update_layout(bargap=0.2)
+        fig.show()
+
+    return df
