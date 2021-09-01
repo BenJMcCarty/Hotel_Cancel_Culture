@@ -380,11 +380,14 @@ def explore_feature_test(dataframe, column_name, normalize = True, width = 800, 
     value_counts = dataframe[column_name].value_counts(dropna=False, normalize=normalize, bins=bins)
     value_counts = pd.DataFrame(value_counts)
     value_counts['report'] = 'Counts'
+    
+    dtypes = pd.DataFrame([dataframe[column_name].dtypes], index=['Type'], columns=[column_name])
+    dtypes['report'] = 'Datatype'
 
-    df = pd.concat([stats, value_counts], axis=0, keys=['Statistics', 'Value_Counts']).drop(columns='report')
+    df = pd.concat([stats, value_counts, dtypes], axis=0, keys=['Statistics', 'Value_Counts', 'Datatype']).drop(columns='report')
 
     ## Setting RGBA values for blue, orange
-    colors = {'Statistics': (76, 120, 168, 1), 'Value_Counts': (245, 133, 24, 1)}
+    colors = {'Statistics': (76, 120, 168, 1), 'Value_Counts': (245, 133, 24, 1), 'Datatype': (66, 153, 80, 1)}
 
     ## Setting full/quarter alpha levels for colors 
     c1 = {k: (r,g,b, .275) for k, (r,g,b,a) in colors.items()}
