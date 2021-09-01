@@ -348,35 +348,22 @@ def explore_feature_test(dataframe, column_name, normalize = True, width = 800, 
 
     print('\n|','---'*9,'Feature Details','---'*10+'-','|\n')    
 
-    # stats = dataframe[column_name].describe()
-    # stats = pd.DataFrame(stats)
-    # stats['report'] = 'Stats'
-
+    ## Creating dataframe for .describe() results
     cxl_desc = dataframe[dataframe[target_feature] == 1][column_name].describe()
     co_desc = dataframe[dataframe[target_feature] == 0][column_name].describe()
     comb_desc = pd.DataFrame(pd.concat([co_desc,cxl_desc], keys = ['Check-Out', 'Canceled']))
-    # comb_desc['report']='stats'    
 
-    # value_counts = dataframe[column_name].value_counts(dropna=False, normalize=normalize, bins=bins)
-    # value_counts = pd.DataFrame(value_counts)
-    # value_counts['report'] = 'Counts'
-
-    vc_cxl = dataframe[dataframe[target_feature] == 1][column_name].value_counts(dropna=False, normalize=normalize, bins=bins)
-    vc_co = dataframe[dataframe[target_feature] == 0][column_name].value_counts(dropna=False, normalize=normalize, bins=bins)
+    ## Creating dataframe for .value_counts() results
+    vc_cxl = dataframe[dataframe[target_feature] == 1][column_name].value_counts(dropna=False, normalize=normalize, bins=bins, sort=False).sort_index()
+    vc_co = dataframe[dataframe[target_feature] == 0][column_name].value_counts(dropna=False, normalize=normalize, bins=bins, sort=False).sort_index()
     value_counts = pd.DataFrame(pd.concat([vc_co,vc_cxl], keys = ['Check-Out', 'Canceled']))
-    # value_counts['report'] = 'Counts'
     
+    ## Creating dataframe for .dtypes results
     dt_cxl = pd.DataFrame(dataframe[dataframe[target_feature] == 1][column_name].dtypes, index=['Type'], columns=[column_name])
     dt_co = pd.DataFrame(dataframe[dataframe[target_feature] == 0][column_name].dtypes, index=['Type'], columns=[column_name])
     dtypes = pd.concat([dt_co,dt_cxl], keys = ['Check-Out', 'Canceled'])
-    # dtypes['report'] = 'Datatype'
 
-    # stats_cxl = dataframe[dataframe['is_canceled'] == 1][column_name].describe()
-    # stats_co = dataframe[dataframe['is_canceled'] == 0][column_name].describe()
-    # stats = pd.DataFrame(pd.concat([stats_co,stats_cxl], keys = ['Check-Out', 'Canceled']))
-    # stats['report'] = 'Stats'
-
-    df = pd.concat([comb_desc, value_counts, dtypes], axis=0, keys=['Statistics', 'Value_Counts', 'Datatype'])#.drop(columns='report')
+    df = pd.concat([comb_desc, value_counts, dtypes], axis=0, keys=['Statistics', 'Value_Counts', 'Datatype'])
 
     ## Setting RGBA values for blue, orange
     colors = {'Statistics': (76, 120, 168, 1), 'Value_Counts': (245, 133, 24, 1), 'Datatype': (66, 153, 80, 1)}
