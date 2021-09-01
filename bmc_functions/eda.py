@@ -339,9 +339,8 @@ def explore_feature(dataframe, column_name, normalize = True, width = 800, heigh
     return df
 
 
-def explore_feature_test(dataframe, column_name, normalize = True, width = 800, height=600, bins=None, plot_type = None,
-                    marginal_x=None, marginal_y = None,target_feature = None,
-                    plot_label = None, plot_title=None):
+def explore_feature_test(dataframe, column_name, normalize = True, width = 800, height=600, target_feature= None, bins=None, plot_type = None,
+                    marginal_x=None, marginal_y = None,plot_label = None, plot_title=None):
 
     """Generates a dataframe containing details about the selected feature. 
     Offers options to produce a Plotly Express plot: histogram, box, scatter (w/ regression line),
