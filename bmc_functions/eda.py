@@ -293,14 +293,13 @@ def explore_feature(dataframe, column_name, normalize = True, width = 800, heigh
         vc_co = dataframe[dataframe[target_feature] == 0][column_name].value_counts(dropna=False, normalize=normalize, bins=bins, sort=False).sort_index()
         value_counts = pd.DataFrame(pd.concat([vc_co,vc_cxl], keys = ['Check-Out', 'Canceled']))
     else:
-        cleaned = target_feature.replace('_', ' ').title()
-        vc_cxl = dataframe[column_name].value_counts(dropna=False, normalize=normalize, bins=bins, sort=False).sort_index()
-        vc_co = dataframe[column_name].value_counts(dropna=False, normalize=normalize, bins=bins, sort=False).sort_index()
-        value_counts = pd.DataFrame(pd.concat([vc_co,vc_cxl], keys = [f'{cleaned}']))
+        vc_cxl = dataframe[dataframe[target_feature] == 1][column_name].value_counts(dropna=False, normalize=normalize, bins=bins, sort=False).sort_index()
+        vc_co = dataframe[dataframe[target_feature] == 0][column_name].value_counts(dropna=False, normalize=normalize, bins=bins, sort=False).sort_index()
+        value_counts = pd.DataFrame(pd.concat([vc_co,vc_cxl], keys = ['Check-Out', 'Canceled']))
     
     ## Creating dataframe for .dtypes results
-    dt_cxl = pd.DataFrame(dataframe[dataframe[target_feature] == 1][column_name].dtypes, index=['Type'], columns=[column_name])
-    dt_co = pd.DataFrame(dataframe[dataframe[target_feature] == 0][column_name].dtypes, index=['Type'], columns=[column_name])
+    dt_cxl = pd.DataFrame(dataframe[dataframe[target_feature] == 1][column_name].dtypes, index=[' '], columns=[column_name])
+    dt_co = pd.DataFrame(dataframe[dataframe[target_feature] == 0][column_name].dtypes, index=[' '], columns=[column_name])
     dtypes = pd.concat([dt_co,dt_cxl], keys = [' '])
 
     df = pd.concat([comb_desc, value_counts, dtypes], axis=0, keys=['Statistics', 'Value Counts', 'Datatype'])
