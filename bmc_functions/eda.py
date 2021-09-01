@@ -277,21 +277,36 @@ def explore_feature(dataframe, column_name, normalize = True, width = 800, heigh
 
     print('\n|','---'*9,'Feature Details','---'*10+'-','|\n')    
 
-    stats = dataframe[column_name].describe()
-    stats = pd.DataFrame(stats)
-    stats['report'] = 'Stats'
+    ## Creating dataframe for .describe() results
+    if dataframe[column_name].dtype != 'O':
+        cxl_desc = dataframe[dataframe[target_feature] == 1][column_name].describe()
+        co_desc = dataframe[dataframe[target_feature] == 0][column_name].describe()
+        comb_desc = pd.DataFrame(pd.concat([co_desc,cxl_desc], keys = ['Check-Out', 'Canceled']))
+    else:
+        cxl_desc = dataframe[column_name].describe()
+        co_desc = dataframe[column_name].describe()
+        comb_desc = pd.DataFrame(pd.concat([co_desc,cxl_desc], keys = ['Check-Out', 'Canceled']))
 
-    value_counts = dataframe[column_name].value_counts(dropna=False, normalize=normalize, bins=bins)
-    value_counts = pd.DataFrame(value_counts)
-    value_counts['report'] = 'Counts'
+    ## Creating dataframe for .value_counts() results
+    if dataframe[column_name].dtype != 'O':
+        vc_cxl = dataframe[dataframe[target_feature] == 1][column_name].value_counts(dropna=False, normalize=normalize, bins=bins, sort=False).sort_index()
+        vc_co = dataframe[dataframe[target_feature] == 0][column_name].value_counts(dropna=False, normalize=normalize, bins=bins, sort=False).sort_index()
+        value_counts = pd.DataFrame(pd.concat([vc_co,vc_cxl], keys = ['Check-Out', 'Canceled']))
+    else:
+        cleaned = target_feature.replace('_', ' ').title()
+        vc_cxl = dataframe[column_name].value_counts(dropna=False, normalize=normalize, bins=bins, sort=False).sort_index()
+        vc_co = dataframe[column_name].value_counts(dropna=False, normalize=normalize, bins=bins, sort=False).sort_index()
+        value_counts = pd.DataFrame(pd.concat([vc_co,vc_cxl], keys = [f'{cleaned}']))
     
-    dtypes = pd.DataFrame([dataframe[column_name].dtypes], index=['Type'], columns=[column_name])
-    dtypes['report'] = 'Datatype'
+    ## Creating dataframe for .dtypes results
+    dt_cxl = pd.DataFrame(dataframe[dataframe[target_feature] == 1][column_name].dtypes, index=['Type'], columns=[column_name])
+    dt_co = pd.DataFrame(dataframe[dataframe[target_feature] == 0][column_name].dtypes, index=['Type'], columns=[column_name])
+    dtypes = pd.concat([dt_co,dt_cxl], keys = [' '])
 
-    df = pd.concat([stats, value_counts, dtypes], axis=0, keys=['Statistics', 'Value_Counts', 'Datatype']).drop(columns='report')
+    df = pd.concat([comb_desc, value_counts, dtypes], axis=0, keys=['Statistics', 'Value Counts', 'Datatype'])
 
     ## Setting RGBA values for blue, orange
-    colors = {'Statistics': (76, 120, 168, 1), 'Value_Counts': (245, 133, 24, 1), 'Datatype': (66, 153, 80, 1)}
+    colors = {'Statistics': (76, 120, 168, 1), 'Value Counts': (245, 133, 24, 1), 'Datatype': (66, 153, 80, 1)}
 
     ## Setting full/quarter alpha levels for colors 
     c1 = {k: (r,g,b, .275) for k, (r,g,b,a) in colors.items()}
