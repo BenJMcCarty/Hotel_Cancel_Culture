@@ -243,103 +243,7 @@ def plot_boxes(data, x_label, y_label, suptitle, figsize=(13,8)):
 
     return
 
-def explore_feature(dataframe, column_name, normalize = True, width = 800, height=600, bins=None, plot_type = None,
-                    marginal_x=None, marginal_y = None,target_feature = None,
-                    plot_label = None, plot_title=None):
-
-    """Generates a dataframe containing details about the selected feature. 
-    Offers options to produce a Plotly Express plot: histogram, box, scatter (w/ regression line),
-    and options to include marginal plots
-
-    Args:
-        dataframe (DataFrame): Data source
-
-        column_name (str): Column/feature name
-
-        width (int, optional): Plot width. Defaults to 600.
-
-        height (int, optional): Plot height. Defaults to 400.
-        
-        plot_type (str, optional): One of "histogram," "box," or "scatter." Defaults to None.
-
-        marginal_x (string, one of 'rug', 'box', 'violin', 'histogram'): Generate a Plotly Express plot on the marginal x axis. Defaults to None.
-        
-        marginal_y (string, one of 'rug', 'box', 'violin', 'histogram'): Generate a Plotly Express plot on the marginal y axis. Defaults to None.
-        
-        target_feature (str, optional): Target feature to use as "color" parameter. Defaults to None.
-        
-        plot_label (str, optional): Plot x-label; dictionary of column name and desired label. Defaults to None.
-        
-        plot_title (str, optional): Plot title. Defaults to None.
-
-    Source: https://stackoverflow.com/questions/59769161/python-color-pandas-dataframe-based-on-multiindex
-      
-    """
-
-    print('\n|','---'*9,'Feature Details','---'*10+'-','|\n')    
-
-    stats = dataframe[column_name].describe()
-    stats = pd.DataFrame(stats)
-    stats['report'] = 'Stats'
-
-    value_counts = dataframe[column_name].value_counts(dropna=False, normalize=normalize, bins=bins)
-    value_counts = pd.DataFrame(value_counts)
-    value_counts['report'] = 'Counts'
-
-    df = pd.concat([stats, value_counts], axis=0, keys=['Statistics', 'Value_Counts']).drop(columns='report')
-
-    ## Setting RGBA values for blue, orange
-    colors = {'Statistics': (76, 120, 168, 1), 'Value_Counts': (245, 133, 24, 1)}
-
-    ## Setting full/quarter alpha levels for colors 
-    c1 = {k: (r,g,b, .35) for k, (r,g,b,a) in colors.items()}
-    c2 = {k: (r,g,b, .2) for k, (r,g,b,a) in colors.items()}
-
-    ## Get values of first level of multi-index
-    idx = df.index.get_level_values(0)
-
-    ## Set CSS for first level
-    css = [{'selector': f'.row{i}.level0', 
-            'props': [('background-color', f'rgba{c1[j]}')]} for i,j in enumerate(idx)]
-
-    ## Counter per first level for pair and unpair coloring
-    zipped = zip(df.groupby(idx).cumcount(), enumerate(idx))
-
-    # 
-    css1 = [{'selector': f'.row{i}', 'props': [('background-color', f'rgba{c1[j]}')]} 
-        if v % 2 == 0 
-        else {'selector': f'.row{i}', 'props': [('background-color', f'rgba{c2[j]}')]} 
-        for v,(i, j) in zipped]
-
-    css2 = [{'selector': 'th', 'props': [('font-size', '115%')]}]
-
-    display(df.style.set_properties(**{'font-size': "115%"}).set_table_styles(css1 + css + css2))
-
-    print('\n\n|','---'*9,'Visualizing Results','---'*9,'|')
-
-    if plot_type is 'histogram':
-        fig = px.histogram(dataframe,column_name,
-                   color=target_feature,
-                   marginal = marginal_x,
-                   labels={column_name: plot_label}, 
-                   title=plot_title,
-                   width = width, height=height)
-        fig.update_layout(bargap=0.2)
-        fig.show()
-
-    if plot_type is 'box':
-        fig = px.box(dataframe,column_name,
-                    color=target_feature,
-                    labels={column_name: plot_label},
-                    title=plot_title,
-                    width = width, height=height)
-        fig.update_layout(bargap=0.2)
-        fig.show()
-
-    return df
-
-
-def explore_feature_test(dataframe, column_name, normalize = True, width = 800, height=600, target_feature= None, bins=None, plot_type = None,
+def explore_feature(dataframe, column_name, normalize = True, width = 800, height=600, target_feature= None, bins=None, plot_type = None,
                     marginal_x=None, marginal_y = None,plot_label = None, plot_title=None):
 
     """Generates a dataframe containing details about the selected feature. 
@@ -385,6 +289,94 @@ def explore_feature_test(dataframe, column_name, normalize = True, width = 800, 
     dtypes['report'] = 'Datatype'
 
     df = pd.concat([stats, value_counts, dtypes], axis=0, keys=['Statistics', 'Value_Counts', 'Datatype']).drop(columns='report')
+
+    ## Setting RGBA values for blue, orange
+    colors = {'Statistics': (76, 120, 168, 1), 'Value_Counts': (245, 133, 24, 1), 'Datatype': (66, 153, 80, 1)}
+
+    ## Setting full/quarter alpha levels for colors 
+    c1 = {k: (r,g,b, .275) for k, (r,g,b,a) in colors.items()}
+    c2 = {k: (r,g,b, .2) for k, (r,g,b,a) in colors.items()}
+
+    ## Get values of first level of multi-index
+    idx = df.index.get_level_values(0)
+
+    ## Set CSS for first level
+    css = [{'selector': f'.row{i}.level0', 
+            'props': [('background-color', f'rgba{c1[j]}')]} for i,j in enumerate(idx)]
+
+    ## Counter per first level for pair and unpair coloring
+    zipped = zip(df.groupby(idx).cumcount(), enumerate(idx))
+
+    # 
+    css1 = [{'selector': f'.row{i}', 'props': [('background-color', f'rgba{c1[j]}')]} 
+        if v % 2 == 0 
+        else {'selector': f'.row{i}', 'props': [('background-color', f'rgba{c2[j]}')]} 
+        for v,(i, j) in zipped]
+
+    css2 = [{'selector': 'th', 'props': [('font-size', '115%')]}]
+
+    display(df.style.set_properties(**{'font-size': "110%"}).set_table_styles(css1 + css + css2))
+
+    print('\n\n|','---'*9,'Visualizing Results','---'*9,'|')
+
+    if plot_type is 'histogram':
+        fig = px.histogram(dataframe,column_name,
+                   color=target_feature,
+                   marginal = marginal_x,
+                   labels={column_name: plot_label}, 
+                   title=plot_title,
+                   width = width, height=height)
+        fig.update_layout(bargap=0.2)
+        fig.show()
+
+    if plot_type is 'box':
+        fig = px.box(dataframe,column_name,
+                    color=target_feature,
+                    labels={column_name: plot_label},
+                    title=plot_title,
+                    width = width, height=height)
+        fig.update_layout(bargap=0.2)
+        fig.show()
+
+    return df
+
+
+def explore_feature_test(dataframe, column_name, normalize = True, width = 800, height=600, target_feature= None, bins=None, plot_type = None,
+                    marginal_x=None, marginal_y = None,plot_label = None, plot_title=None):
+
+    """Test version of explore_feature"""
+
+    print('\n|','---'*9,'Feature Details','---'*10+'-','|\n')    
+
+    # stats = dataframe[column_name].describe()
+    # stats = pd.DataFrame(stats)
+    # stats['report'] = 'Stats'
+
+    cxl_desc = dataframe[dataframe[target_feature] == 1][column_name].describe()
+    co_desc = dataframe[dataframe[target_feature] == 0][column_name].describe()
+    comb_desc = pd.DataFrame(pd.concat([co_desc,cxl_desc], keys = ['Check-Out', 'Canceled']))
+    # comb_desc['report']='stats'    
+
+    # value_counts = dataframe[column_name].value_counts(dropna=False, normalize=normalize, bins=bins)
+    # value_counts = pd.DataFrame(value_counts)
+    # value_counts['report'] = 'Counts'
+
+    vc_cxl = dataframe[dataframe[target_feature] == 1][column_name].value_counts(dropna=False, normalize=normalize, bins=bins)
+    vc_co = dataframe[dataframe[target_feature] == 0][column_name].value_counts(dropna=False, normalize=normalize, bins=bins)
+    value_counts = pd.DataFrame(pd.concat([vc_co,vc_cxl], keys = ['Check-Out', 'Canceled']))
+    # value_counts['report'] = 'Counts'
+    
+    dt_cxl = pd.DataFrame(dataframe[dataframe[target_feature] == 1][column_name].dtypes, index=['Type'], columns=[column_name])
+    dt_co = pd.DataFrame(dataframe[dataframe[target_feature] == 0][column_name].dtypes, index=['Type'], columns=[column_name])
+    dtypes = pd.concat([dt_co,dt_cxl], keys = ['Check-Out', 'Canceled'])
+    # dtypes['report'] = 'Datatype'
+
+    # stats_cxl = dataframe[dataframe['is_canceled'] == 1][column_name].describe()
+    # stats_co = dataframe[dataframe['is_canceled'] == 0][column_name].describe()
+    # stats = pd.DataFrame(pd.concat([stats_co,stats_cxl], keys = ['Check-Out', 'Canceled']))
+    # stats['report'] = 'Stats'
+
+    df = pd.concat([comb_desc, value_counts, dtypes], axis=0, keys=['Statistics', 'Value_Counts', 'Datatype'])#.drop(columns='report')
 
     ## Setting RGBA values for blue, orange
     colors = {'Statistics': (76, 120, 168, 1), 'Value_Counts': (245, 133, 24, 1), 'Datatype': (66, 153, 80, 1)}
