@@ -6,7 +6,7 @@ By Ben McCarty (bmccarty505@gmail.com)'''
 
 import numpy as np
 import pandas as pd
-import statsmodels as stats
+import scipy.stats as stats
 
 import matplotlib.pyplot as plt
 import matplotlib.colors as col
@@ -68,7 +68,64 @@ def find_outliers_z(data):
     zFP = np.abs(stats.zscore(data))
     zFP = pd.Series(zFP, index=data.index)
     idx_outliers = zFP > 3
+
     return idx_outliers
+
+def id_num_cols(data, drop_cols_list = None):
+    """Filters a given Series index/DataFrame columns for numeric datatypes.
+
+    Args:
+        data (Series or DataFrame): dataset to filter
+        drop_cols_list (list of strings, optional): Optional list of strings to drop from results. Defaults to None.
+
+    Returns:
+        temp_indx [list of strings]: index/column labels for numeric columns
+    """    
+
+    temp_idx = data.columns[(data.dtypes == 'int64') | (data.dtypes == 'float64')]
+    
+    if drop_cols_list != None:
+        temp_idx = temp_idx.drop(drop_cols_list)
+
+    temp_idx = list(temp_idx)
+
+    return temp_idx
+
+def outlier_percentage(data):
+    """Identifies numerical columns in a given Series/DataFrame, then calculates the percentage of values
+     exceeding an absolute-valued z-score of 3.
+
+    Displays the resulting dataframe using Pandas styling with a darkening gradient to highlight the highest percentages
+
+    Args:
+        data (Series or DataFrame): Source data.
+
+    Returns:
+        DataFrame: non-styled dataframe containing column names (as index) and outlier percentages.
+    """    
+
+    list_col_names = id_num_cols(data)
+    outlier_results = {}
+    for col in list_col_names:
+        outlier_results[col] = round(round(find_outliers_z(data[col]).sum()/len(data[col]), 4)*100,2)
+
+    pct_df = pd.DataFrame(pd.Series(outlier_results), columns= ['% Outliers'])
+    
+    display(pct_df.style.background_gradient().format("{:,.2f}"))
+
+    return outlier_results
+
+def filter_outliers_zscore(data):
+
+    drop_idx = set()
+
+    num_idx = data.columns[(data.dtypes == 'int64') | (data.dtypes == 'float64')]
+
+    for col in num_idx:
+        temp_idx = find_outliers_z(data[col])
+        drop_idx = data[col][temp_idx].index
+
+    return drop_idx
 
 def find_outliers_IQR(data):
     """Determines outliers using the 1.5*IQR thresholds.
@@ -243,12 +300,18 @@ def plot_boxes(data, x_label, y_label, suptitle, figsize=(13,8)):
 
     return
 
-def explore_feature(dataframe, column_name, normalize = True,sort_val = True, width = 800, height=600,
-                    plot_type = 'histogram', target_feature= None, bins=None,marginal=None,
+def explore_feature(dataframe, column_name, show_visualization, normalize = True,sort_val = True,
+                    plot_type = 'histogram', width = 800, height=600, target_feature= None, bins=None,marginal=None,
                     plot_label = None, plot_title=None):
     """Generates a dataframe summarizing .describe(), .value_counts(), and .dtypes for a given feature from a dataframe.
 
     Also creates a Plotly Express histogram plot for data representation w/ option for marginal box plot on x-axis.
+
+    ---
+
+    DataFrame styling code adapted from:
+    
+    https://stackoverflow.com/questions/59769161/python-color-pandas-dataframe-based-on-multiindex#:~:text=2-,You,-can%20use%20Styler.
 
     Args:
         dataframe ([type]): [description]
@@ -273,13 +336,13 @@ def explore_feature(dataframe, column_name, normalize = True,sort_val = True, wi
     positive = dataframe[dataframe[target_feature] == 1][column_name]
 
     ## Creating dataframe for .describe() results
-    temp_pos = pd.DataFrame(positive.describe())
-    temp_neg = pd.DataFrame(negative.describe())
+    temp_pos = pd.DataFrame(positive.describe(datetime_is_numeric=True))
+    temp_neg = pd.DataFrame(negative.describe(datetime_is_numeric=True))
 
     ## Format floats to 2 decimal points
-    if dataframe[column_name].dtype != 'O':
-        temp_pos = temp_pos.applymap("{0:.2f}".format)
-        temp_neg = temp_neg.applymap("{0:.2f}".format)
+    if (dataframe[column_name].dtype == 'int64') or (dataframe[column_name].dtype == 'float64'):
+        temp_pos = round(temp_pos, 2)
+        temp_neg = round(temp_neg, 2)
     
     ## Creating placeholder row for dataframe legibility
     temp_pos.loc['-'] = '-'
@@ -290,8 +353,8 @@ def explore_feature(dataframe, column_name, normalize = True,sort_val = True, wi
 
 
     ## Creating dataframe for .value_counts() results
-    vc_cxl = positive.value_counts(dropna=False, normalize=normalize, bins=bins, sort=sort_val)
-    vc_co = negative.value_counts(dropna=False, normalize=normalize, bins=bins, sort=sort_val)
+    vc_cxl = positive.value_counts(dropna=False, normalize=normalize, bins=bins, sort=sort_val).sort_index()
+    vc_co = negative.value_counts(dropna=False, normalize=normalize, bins=bins, sort=sort_val).sort_index()
     value_counts = pd.DataFrame(pd.concat([vc_co,vc_cxl], keys = ['Check-Out', 'Canceled'])).applymap("{0:.2f}".format)
     
     ## Creating dataframe for .dtypes results
@@ -332,24 +395,26 @@ def explore_feature(dataframe, column_name, normalize = True,sort_val = True, wi
 
     print('\n\n|','---'*9,'Visualizing Results','---'*9,'|')
 
-    if plot_type is 'histogram':
-        fig = px.histogram(dataframe,column_name,
-                   color=target_feature,
-                   marginal = marginal,
-                   labels={column_name: plot_label}, 
-                   title=plot_title,
-                   width = width, height=height)
-        fig.update_layout(bargap=0.2)
+    if show_visualization == True:
 
-    if plot_type is 'box':
-        fig = px.box(dataframe,column_name,
+        if plot_type is 'histogram':
+            fig = px.histogram(dataframe,column_name,
                     color=target_feature,
-                    labels={column_name: plot_label},
+                    marginal = marginal,
+                    labels={column_name: plot_label}, 
                     title=plot_title,
                     width = width, height=height)
-        fig.update_layout(bargap=0.2)
-    
-    fig.show()
+            fig.update_layout(bargap=0.2)
+
+        if plot_type is 'box':
+            fig = px.box(dataframe,column_name,
+                        color=target_feature,
+                        labels={column_name: plot_label},
+                        title=plot_title,
+                        width = width, height=height)
+            fig.update_layout(bargap=0.2)
+        
+        fig.show()
 
     return df
 
@@ -357,6 +422,12 @@ def explore_feature(dataframe, column_name, normalize = True,sort_val = True, wi
 def test_explore_feature(dataframe, column_name, normalize = True, width = 800, height=600, target_feature= None, bins=None, plot_type = None,
                     marginal=None, plot_label = None, plot_title=None):
     """Used for testing and development.
+    
+    ---
+
+    DataFrame styling code adapted from:
+    
+    https://stackoverflow.com/questions/59769161/python-color-pandas-dataframe-based-on-multiindex#:~:text=2-,You,-can%20use%20Styler.
     """
 
 
