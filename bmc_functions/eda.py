@@ -243,21 +243,55 @@ def plot_boxes(data, x_label, y_label, suptitle, figsize=(13,8)):
 
     return
 
-def explore_feature(dataframe, column_name, normalize = True, width = 800, height=600, target_feature= None, bins=None, plot_type = None,
-                    marginal=None, plot_label = None, plot_title=None):
+def explore_feature(dataframe, column_name, normalize = True,sort_val = True, width = 800, height=600,
+                    plot_type = 'histogram', target_feature= None, bins=None,marginal=None,
+                    plot_label = None, plot_title=None):
+    """Generates a dataframe summarizing .describe(), .value_counts(), and .dtypes for a given feature from a dataframe.
+
+    Also creates a Plotly Express histogram plot for data representation w/ option for marginal box plot on x-axis.
+
+    Args:
+        dataframe ([type]): [description]
+        column_name ([type]): [description]
+        normalize (bool, optional): [description]. Defaults to True.
+        width (int, optional): [description]. Defaults to 800.
+        height (int, optional): [description]. Defaults to 600.
+        target_feature ([type], optional): [description]. Defaults to None.
+        bins ([type], optional): [description]. Defaults to None.
+        plot_type ([type], optional): [description]. Defaults to None.
+        marginal ([type], optional): [description]. Defaults to None.
+        plot_label ([type], optional): [description]. Defaults to None.
+        plot_title ([type], optional): [description]. Defaults to None.
+
+    Returns:
+        [type]: [description]
+    """    
+
     print('\n|','---'*9,'Feature Details','---'*10+'-','|\n')    
 
     negative = dataframe[dataframe[target_feature] == 0][column_name]
     positive = dataframe[dataframe[target_feature] == 1][column_name]
 
     ## Creating dataframe for .describe() results
-    comb_desc = pd.DataFrame(pd.concat([positive.describe(),negative.describe()], keys = ['Check-Out', 'Canceled']))
+    temp_pos = pd.DataFrame(positive.describe())
+    temp_neg = pd.DataFrame(negative.describe())
+
+    ## Format floats to 2 decimal points
     if dataframe[column_name].dtype != 'O':
-        comb_desc = comb_desc.applymap("{0:.2f}".format)
+        temp_pos = temp_pos.applymap("{0:.2f}".format)
+        temp_neg = temp_neg.applymap("{0:.2f}".format)
+    
+    ## Creating placeholder row for dataframe legibility
+    temp_pos.loc['-'] = '-'
+    temp_neg.loc['-'] = '-'
+
+    ## Concat temp dataframes into one main w/ multi-index
+    comb_desc = pd.DataFrame(pd.concat([temp_pos, temp_neg], keys = ['Check-Out', 'Canceled']))
+
 
     ## Creating dataframe for .value_counts() results
-    vc_cxl = positive.value_counts(dropna=False, normalize=normalize, bins=bins, sort=False).sort_index()
-    vc_co = negative.value_counts(dropna=False, normalize=normalize, bins=bins, sort=False).sort_index()
+    vc_cxl = positive.value_counts(dropna=False, normalize=normalize, bins=bins, sort=sort_val)
+    vc_co = negative.value_counts(dropna=False, normalize=normalize, bins=bins, sort=sort_val)
     value_counts = pd.DataFrame(pd.concat([vc_co,vc_cxl], keys = ['Check-Out', 'Canceled'])).applymap("{0:.2f}".format)
     
     ## Creating dataframe for .dtypes results
@@ -294,9 +328,7 @@ def explore_feature(dataframe, column_name, normalize = True, width = 800, heigh
     css2 = [{'selector': 'th', 'props': [('font-size', '115%'), ('text-align', 'left')],
             'selector': 'tb', 'props': [('font-size', '110%'), ('text-align', 'right')]}]
 
-    css3 = [{'selector': '.row4','props': [('border-top', 'ridge 1px')]}]
-
-    display(df.style.set_table_styles(css + css1 + css2 + css3))
+    display(df.style.set_table_styles(css + css1 + css2))
 
     print('\n\n|','---'*9,'Visualizing Results','---'*9,'|')
 
@@ -324,24 +356,7 @@ def explore_feature(dataframe, column_name, normalize = True, width = 800, heigh
 
 def test_explore_feature(dataframe, column_name, normalize = True, width = 800, height=600, target_feature= None, bins=None, plot_type = None,
                     marginal=None, plot_label = None, plot_title=None):
-    """[summary]
-
-    Args:
-        dataframe ([type]): [description]
-        column_name ([type]): [description]
-        normalize (bool, optional): [description]. Defaults to True.
-        width (int, optional): [description]. Defaults to 800.
-        height (int, optional): [description]. Defaults to 600.
-        target_feature ([type], optional): [description]. Defaults to None.
-        bins ([type], optional): [description]. Defaults to None.
-        plot_type ([type], optional): [description]. Defaults to None.
-        marginal_x ([type], optional): [description]. Defaults to None.
-        marginal_y ([type], optional): [description]. Defaults to None.
-        plot_label ([type], optional): [description]. Defaults to None.
-        plot_title ([type], optional): [description]. Defaults to None.
-
-    Returns:
-        [type]: [description]
+    """Used for testing and development.
     """
 
 
