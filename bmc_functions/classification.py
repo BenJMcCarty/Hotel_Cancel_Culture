@@ -131,36 +131,21 @@ def plot_importances(model, X_train_df, count = 10, return_importances = False, 
             pd.Series: feature importances as a Pandas 
     """    
 
-    importances = pd.Series(model.feature_importances_, index= X_train_df.columns)
+    col_names =  list(map(lambda x: x.title().replace('_', ' '), list(X_train_df.columns)))
+
+    importances = pd.Series(model.feature_importances_, index= col_names)
     
     importances = importances.sort_values(ascending = False)
 
-    top_imp = list(importances.sort_values(ascending = False).index[:count])
-   
-    for i in range(len(top_imp)):
-    
-        if top_imp[i] == 'minimum_nights_avg_ntm':
-            top_imp[i] = 'minimum_avg_nights.'
-        if top_imp[i] == 'maximum_nights_avg_ntm':
-            top_imp[i] = 'maximum_avg_nights.'
-        if top_imp[i] == 'host_listings_count':
-            top_imp[i] = 'number_of_host_regional_listings'
-        if top_imp[i] == 'host_total_listings_count':
-            top_imp[i] = 'number_of_host_overall_listings'
-        if top_imp[i] == 'num_bathrooms':
-            top_imp[i] = 'number_of_bathrooms'
-        if top_imp[i] == 'host_is_superhost':
-            top_imp[i] = 'is_superhost'
-        
-            
-        top_imp[i] = top_imp[i].replace("_", " ").title()
-
     ax = importances[:count].plot(kind= 'barh')
-    ax.set(title=f'Top {count} Strongest Predictors', xlabel='Strength',
-                yticklabels=top_imp)
+    ax.set(title=f'Top {count} Most Important Predictors', xlabel='importance')
+    
+    plt.show()
     
     if save_fig == True:
         plt.savefig(f'{model_name}_feat_imp.png')
+
+    plt.close()
 
     if return_importances == True:
         return importances
@@ -204,7 +189,7 @@ def cf_rpt_results(y_true, y_preds, metric):
               cr_df.loc['1'][1],
               cr_df.loc['1'][0],
               cr_df.loc['1'][2],
-              cr_df.loc['macro avg'][2],
+              cr_df.loc['macro avg'][1],
               cr_df.loc['macro avg'][0],
               cr_df.loc['macro avg'][1]
     ]
@@ -239,11 +224,6 @@ def evaluate_classification(model,X_train, y_train, X_test, y_test, metric = 'ac
 
     print('\n|' + '----'*8 + ' Classification Metrics ' + '---'*11 + '--|\n')
 
-# ********* LEFT OFF HERE ********
-# creating parameter for user to specify an sklearn metric for scoring purposes
-# dont use dict; use get_scorer/make_scorer
-# see JNB for more details
-
     y_hat_train = model.predict(X_train)
     prob_train = model.predict_proba(X_train)
 
@@ -255,8 +235,8 @@ def evaluate_classification(model,X_train, y_train, X_test, y_test, metric = 'ac
     train_score = cf_rpt_results(y_train, y_hat_train, metric)
     test_score = cf_rpt_results(y_test, y_hat_test, metric)
 
-    print(f'The training score is: {train_score}')
-    print(f'The testing score is: {test_score}')
+    print(f'Training {metric} score: {train_score}')
+    print(f'Testing {metric} score: {test_score}')
 
     if verbose == 1:
         
@@ -271,7 +251,7 @@ def evaluate_classification(model,X_train, y_train, X_test, y_test, metric = 'ac
 
     ### --- Log Loss --- ###
 
-    print(f"\n\nTraining data log loss: {metrics.log_loss(y_train, prob_train):.2f}")
+    print(f"\nTraining data log loss: {metrics.log_loss(y_train, prob_train):.2f}")
     print(f"Testing data log loss: {metrics.log_loss(y_test, prob_test):.2f}\n")
 
     if verbose == 2:
