@@ -3,11 +3,16 @@
 Description: Functions designed to assist with the creation and evaluation of classification modeling.
 
 By Ben McCarty (bmccarty505@gmail.com)'''
+
 import numpy as np
-import seaborn as sns
-from sklearn import metrics
+import pandas as pd
+
 import matplotlib.pyplot as plt
+import seaborn as sns
+
+from sklearn import metrics
 from sklearn.metrics._plot.precision_recall_curve import PrecisionRecallDisplay
+
 
 ## Generating scores for later comparisons
 
@@ -160,9 +165,56 @@ def plot_importances(model, X_train_df, count = 10, return_importances = False, 
     if return_importances == True:
         return importances
 
+
+def cf_rpt_results(y_true, y_preds, metric):
+
+        ## Getting clf rpt as dict -> df
+    cr_df = pd.DataFrame(metrics.classification_report(y_true, y_preds,
+                                                   output_dict=True))
+
+    ## Rounding all values to 2 decimals
+    cr_df = cr_df.applymap(lambda x: round(x, 2))
+
+    ## adding blank col b/t 1, "accuracy"
+    cr_df.insert(2,column=" ", value=" ")
+    
+    # Transposing df
+    cr_df = cr_df.T
+
+    ## Converting 'accuracy' values to strings to replace values w/ blank strings
+    for value in range(len(cr_df.loc['accuracy':,])):
+        cr_df.loc['accuracy'][value] = round(cr_df.loc['accuracy'][value],2)
+        cr_df.loc['accuracy'][value] = str(cr_df.loc['accuracy'][value])
+
+    ## Converting remaining values back to floats
+    cr_df.loc['accuracy'][2:4] = pd.to_numeric(cr_df.loc['accuracy'][2:4])
+
+    ## Copying "support" value from macro average
+    cr_df.loc['accuracy','support'] = cr_df.loc['macro avg','support']
+
+    cond = [metric == 'accuracy',
+            metric == 'precision',
+            metric == 'recall',
+            metric == 'f1',
+            metric == 'balanced accuracy',
+            metric == 'balanced precision',
+            metric == 'balanced recall']
+
+    choice = [cr_df.loc['accuracy'][2],
+              cr_df.loc['1'][1],
+              cr_df.loc['1'][0],
+              cr_df.loc['1'][2],
+              cr_df.loc['macro avg'][2],
+              cr_df.loc['macro avg'][0],
+              cr_df.loc['macro avg'][1]
+    ]
+
+    return np.select(cond, choice, None)
+
+
 ##
-def evaluate_classification(model,X_train, y_train, X_test, y_test,average = 'macro',
-                    verbose = True, cmap='Blues',normalize='true',figsize=(10,4), metric=None, labels=None):                 
+def evaluate_classification(model,X_train, y_train, X_test, y_test, metric = 'accuracy',
+                    verbose = True, cmap='Blues',normalize='true',figsize=(10,4), labels=None):                 
     """[summary]
     
     Adapted from:
@@ -184,16 +236,13 @@ def evaluate_classification(model,X_train, y_train, X_test, y_test,average = 'ma
     Returns:
         [type]: [description]
     """                    
-    
-    from sklearn import metrics
-    import matplotlib.pyplot as plt
 
     print('\n|' + '----'*8 + ' Classification Metrics ' + '---'*11 + '--|\n')
 
-********* LEFT OFF HERE ********
-creating parameter for user to specify an sklearn metric for scoring purposes
-dont use dict; use get_scorer/make_scorer
-see JNB for more details
+# ********* LEFT OFF HERE ********
+# creating parameter for user to specify an sklearn metric for scoring purposes
+# dont use dict; use get_scorer/make_scorer
+# see JNB for more details
 
     y_hat_train = model.predict(X_train)
     prob_train = model.predict_proba(X_train)
@@ -203,38 +252,16 @@ see JNB for more details
 
     ### --- Scores --- ###
 
+    train_score = cf_rpt_results(y_train, y_hat_train, metric)
+    test_score = cf_rpt_results(y_test, y_hat_test, metric)
 
-
-    {'accuracy':            {'train': metrics.accuracy_score(y_train, prob_train),\
-                             'test': metrics.accuracy_score(y_train, prob_train)},
-    'balanced accuracy':    {'train': metrics.balanced_accuracy_score(y_train, prob_train),\
-                             'test': metrics.balanced_accuracy_score(y_train, prob_train)},
-    'precision':            {'train': metrics.precision_score(y_train, prob_train),\
-                             'test': metrics.precision_score(y_train, prob_train)},
-    'recall':               {'train': metrics.recall_score(y_train, prob_train),\
-                             'test': metrics.recall_score(y_train, prob_train)},
-    'f1':                   {'train': metrics.f1_score(y_train, prob_train),\
-                             'test': metrics.f1_score(y_train, prob_train)},
-    None:                   {'train': metrics.score(y_train, prob_train),\
-                             'test': metrics.score(y_train, prob_train)}
-    }
-
-    print(f'Training {metric} score: {round(train_score,2)}')
-    print(f'Testing {metric} score: {round(test_score, 2)}')
-
-    if metric is "all":
-        train_score = round(metrics.precision_recall_fscore_support(y_train, prob_train, average = average), 2)
-        test_score = round(metrics.precision_recall_fscore_support(y_test, prob_test, average = average), 2)
-
-        print(f'Training {metric} scores:\n\tPrecision: {train_score[0]}\n\Recall: {train_score[1]}\
-            \n\F1: {train_score[2]}\n\Support: {train_score[3]}')
-
-        print(f'Testing {metric} scores:\n\tPrecision: {train_score[0]}\n\Recall: {train_score[1]}\
-            \n\F1: {train_score[2]}\n\Support: {test_score[3]}')
-
-    difference = train_score - test_score
+    print(f'The training score is: {train_score}')
+    print(f'The testing score is: {test_score}')
 
     if verbose == 1:
+        
+        difference = train_score - test_score
+        
         if difference > 0:
             print(f"\t- The training score is larger by {np.abs(difference):.2f} points.")
         elif difference < 0:
