@@ -3,6 +3,11 @@
 Description: Functions designed to assist with the creation and evaluation of classification modeling.
 
 By Ben McCarty (bmccarty505@gmail.com)'''
+import numpy as np
+import seaborn as sns
+from sklearn import metrics
+import matplotlib.pyplot as plt
+from sklearn.metrics._plot.precision_recall_curve import PrecisionRecallDisplay
 
 ## Generating scores for later comparisons
 
@@ -156,9 +161,8 @@ def plot_importances(model, X_train_df, count = 10, return_importances = False, 
         return importances
 
 ##
-def evaluate_classification(model,X_train, y_train, X_test, y_test, metric,
-                    verbose = True, labels=None, cmap='Blues',normalize='true',
-                    figsize=(10,4)):                 
+def evaluate_classification(model,X_train, y_train, X_test, y_test,average = 'macro',
+                    verbose = True, cmap='Blues',normalize='true',figsize=(10,4), metric=None, labels=None):                 
     """[summary]
     
     Adapted from:
@@ -185,14 +189,48 @@ def evaluate_classification(model,X_train, y_train, X_test, y_test, metric,
     import matplotlib.pyplot as plt
 
     print('\n|' + '----'*8 + ' Classification Metrics ' + '---'*11 + '--|\n')
-    
+
+********* LEFT OFF HERE ********
+creating parameter for user to specify an sklearn metric for scoring purposes
+dont use dict; use get_scorer/make_scorer
+see JNB for more details
+
+    y_hat_train = model.predict(X_train)
+    prob_train = model.predict_proba(X_train)
+
+    y_hat_test = model.predict(X_test)
+    prob_test = model.predict_proba(X_test)
+
     ### --- Scores --- ###
 
-    train_score = model.score(X_train, y_train).round(2)
-    print(f'Training {metric} score: {train_score}')
 
-    test_score = model.score(X_test,y_test).round(2)
-    print(f'Testing {metric} score: {test_score}')
+
+    {'accuracy':            {'train': metrics.accuracy_score(y_train, prob_train),\
+                             'test': metrics.accuracy_score(y_train, prob_train)},
+    'balanced accuracy':    {'train': metrics.balanced_accuracy_score(y_train, prob_train),\
+                             'test': metrics.balanced_accuracy_score(y_train, prob_train)},
+    'precision':            {'train': metrics.precision_score(y_train, prob_train),\
+                             'test': metrics.precision_score(y_train, prob_train)},
+    'recall':               {'train': metrics.recall_score(y_train, prob_train),\
+                             'test': metrics.recall_score(y_train, prob_train)},
+    'f1':                   {'train': metrics.f1_score(y_train, prob_train),\
+                             'test': metrics.f1_score(y_train, prob_train)},
+    None:                   {'train': metrics.score(y_train, prob_train),\
+                             'test': metrics.score(y_train, prob_train)}
+    }
+
+    print(f'Training {metric} score: {round(train_score,2)}')
+    print(f'Testing {metric} score: {round(test_score, 2)}')
+
+    if metric is "all":
+        train_score = round(metrics.precision_recall_fscore_support(y_train, prob_train, average = average), 2)
+        test_score = round(metrics.precision_recall_fscore_support(y_test, prob_test, average = average), 2)
+
+        print(f'Training {metric} scores:\n\tPrecision: {train_score[0]}\n\Recall: {train_score[1]}\
+            \n\F1: {train_score[2]}\n\Support: {train_score[3]}')
+
+        print(f'Testing {metric} scores:\n\tPrecision: {train_score[0]}\n\Recall: {train_score[1]}\
+            \n\F1: {train_score[2]}\n\Support: {test_score[3]}')
 
     difference = train_score - test_score
 
@@ -206,13 +244,7 @@ def evaluate_classification(model,X_train, y_train, X_test, y_test, metric,
 
     ### --- Log Loss --- ###
 
-    y_hat_train = model.predict(X_train)
-    prob_train = model.predict_proba(X_train)
-
-    y_hat_test = model.predict(X_test)
-    prob_test = model.predict_proba(X_test)
-
-    print(f"\n\nTraining data Log Loss: {metrics.log_loss(y_train, prob_train):.2f}")
+    print(f"\n\nTraining data log loss: {metrics.log_loss(y_train, prob_train):.2f}")
     print(f"Testing data log loss: {metrics.log_loss(y_test, prob_test):.2f}\n")
 
     if verbose == 2:
