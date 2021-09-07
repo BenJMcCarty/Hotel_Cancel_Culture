@@ -137,8 +137,12 @@ def ts_split(dataframe, threshold=.85, show_vis=False, figsize=(10,5)):
     split_dict['test'] = dataframe.iloc[tts_cutoff:]
     split_dict['split_vis'] = fig
 
-    if show_vis is False:
-        plt.close()
+    if show_vis is True:
+        plt.show(fig)
+
+    plt.close(fig)
+
+    del tts_cutoff, train, test, fig, ax
 
     return split_dict
 
@@ -154,6 +158,11 @@ def model_performance(ts_model, show_vis = False):
     perf['summary'] = ts_model.summary()
 
     perf['vis'] = ts_model.plot_diagnostics(figsize = (12, 6))
+
+    if show_vis == True:
+        plt.show(perf['vis'])
+
+    plt.close(perf['vis'])
 
     return perf
 
@@ -279,11 +288,13 @@ def plot_forecast_ttf(split_dict, forecast_df, figsize = (10,5), show_vis = Fals
     ax.legend(loc='upper left')
     
     ttf_dict = {}
-    ttf_dict['figure'] = fig
+    ttf_dict['vis'] = fig
 
-    if show_vis is False:
-        plt.close()
+    if show_vis == True:
+        plt.show()
     
+    plt.close()
+
     return ttf_dict
 
 ## Plotting training, testing datasets
@@ -307,11 +318,13 @@ def plot_forecast_final(zipcode_val, forecast_full, figsize = (10,5), show_vis =
       color='k')
     ax.legend(loc='upper left')
 
-    if show_vis is False:
-        plt.close()
+    if show_vis == True:
+        plt.show()
 
     final_dict = {}
-    final_dict['figure'] = fig
+    final_dict['vis'] = fig
+
+    plt.close()
 
     return final_dict
 
@@ -343,6 +356,13 @@ def ts_modeling_workflow(dataframe, zipcode, threshold = .85, m= 12,figsize = (1
 
     train = split_dict.get('train')
     test = split_dict.get('test')
+    split_vis = split_dict.get('split_vis')
+    
+    if show_vis == True:
+        plt.show(split_vis)
+    
+    plt.close()
+    del split_vis
 
     ## Generating auto_arima model and SARIMAX model
     ## (based on best parameters from auto_arima model)
@@ -351,11 +371,28 @@ def ts_modeling_workflow(dataframe, zipcode, threshold = .85, m= 12,figsize = (1
     ## Saving training model results
     metrics['train'] = model_performance(best_model_train)
 
+    vis = metrics.get('train').get('vis')
+
+    if show_vis == True:
+        plt.show(vis)
+    
+    plt.close(vis)
+
+    del vis
+
     ## Generating dataframe to store forecast results
     forecast_train = forecast_and_ci(best_model_train, test)
 
     ## Plotting forecast results against train/test split
     forecast_vis['train'] = plot_forecast_ttf(split_dict, forecast_df = forecast_train, figsize=figsize)
+
+    vis = forecast_vis.get('train').get('vis')
+
+    if show_vis == True:
+        plt.show(vis)
+    
+    plt.close(vis)
+    del vis
 
     ## Fitting best model using whole dataset
     best_model_full = tsa.SARIMAX(zipcode_val,order=auto_model_train.order,
@@ -363,6 +400,15 @@ def ts_modeling_workflow(dataframe, zipcode, threshold = .85, m= 12,figsize = (1
                             enforce_invertibility=False).fit()
 
     metrics['full'] = model_performance(best_model_full)
+    
+
+    vis = metrics.get('vis')
+
+    if show_vis == True:
+        plt.show(vis)
+    
+    plt.close(vis)
+    del vis
 
     ## Using get_forecast to generate forecasted data
     best_forecast = forecast_and_ci(best_model_full, test)
@@ -372,6 +418,8 @@ def ts_modeling_workflow(dataframe, zipcode, threshold = .85, m= 12,figsize = (1
     ## Plotting original data and forecast results
     forecast_vis['full'] = plot_forecast_final(zipcode_val, tsa_results['forecasted_prices'], figsize=figsize)
     
+    plt.show(forecast_vis['full'])
+
     ## Calculating investment cost and ROI across dataframe
     investment_cost = tsa_results['forecasted_prices'].iloc[0,2]
     tsa_results['roi'] = (tsa_results['forecasted_prices'] - investment_cost)/investment_cost*100
@@ -379,36 +427,7 @@ def ts_modeling_workflow(dataframe, zipcode, threshold = .85, m= 12,figsize = (1
     tsa_results['num_yrs_forecast'] = len(split_dict['test'])
     tsa_results['model_metrics'] = metrics
     tsa_results['model_visuals'] = forecast_vis
-
-    ## May be unused - need full ROI DF to pull ROI based on smallest len(test) for all zips
-    # ## Pulling ROI for final forecasted date
-    # roi_final = roi_df.iloc[-1]
-    # roi_final.name = zipcode_val.name.astype('str')
     
+    plt.close()
+
     return tsa_results
-
-
-## Deprecated due to updates in workflow function
-# def make_dict(dataframe, zipcode, threshold, m=12, show_vis = True, figsize=(12,4)):
-
-#     zip_tsa_results = {}
-#     metrics = {}
-#     forecast_vis = {}
-    
-#     forecast_full, roi_df, split_vis, forecast_length, summary_train, diag_train, summary_full, diag_full, training_frcst, final_frcst = ts_modeling_workflow\
-#             (dataframe = dataframe, threshold = threshold, zipcode = zipcode, m=m, show_vis = show_vis, figsize=figsize)
-        
-#     metrics['train'] = [summary_train, diag_train]
-#     metrics['full'] = [summary_full, diag_full]
-    
-#     forecast_vis['train'] = training_frcst
-#     forecast_vis['full'] = final_frcst
-#     forecast_vis['split'] = split_vis
-    
-#     zip_tsa_results['num_yrs_forecast'] = forecast_length
-#     zip_tsa_results['forecasted_prices'] = forecast_full
-#     zip_tsa_results['roi'] = roi_df
-#     zip_tsa_results['model_metrics'] = metrics
-#     zip_tsa_results['model_visuals'] = forecast_vis
-    
-#     return zip_tsa_results

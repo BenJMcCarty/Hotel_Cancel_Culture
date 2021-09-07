@@ -198,8 +198,9 @@ def cf_rpt_results(y_true, y_preds, metric):
 
 
 ##
-def evaluate_classification(model,X_train, y_train, X_test, y_test, metric = 'accuracy',
-                    verbose = True, cmap='Blues',normalize='true',figsize=(10,4), labels=None):                 
+def evaluate_classification(model,X_train, y_train, X_test, y_test,
+                            metric = 'accuracy', verbose = True, 
+                            cmap='Blues',normalize='true',figsize=(10,4), labels=None):                 
     """[summary]
     
     Adapted from:
@@ -225,10 +226,9 @@ def evaluate_classification(model,X_train, y_train, X_test, y_test, metric = 'ac
     print('\n|' + '----'*8 + ' Classification Metrics ' + '---'*11 + '--|\n')
 
     y_hat_train = model.predict(X_train)
-    prob_train = model.predict_proba(X_train)
-
     y_hat_test = model.predict(X_test)
-    prob_test = model.predict_proba(X_test)
+    prob_train = model.predict_proba(X_train)
+    prob_test = model.predict_proba(X_test)  
 
     ### --- Scores --- ###
 
@@ -249,6 +249,9 @@ def evaluate_classification(model,X_train, y_train, X_test, y_test, metric = 'ac
         else:
             print(f"\t- The scores are the same size.")
 
+    else:
+        pass
+
     ### --- Log Loss --- ###
 
     print(f"\nTraining data log loss: {metrics.log_loss(y_train, prob_train):.2f}")
@@ -261,6 +264,8 @@ def evaluate_classification(model,X_train, y_train, X_test, y_test, metric = 'ac
             print('\tThe log loss for the testing data is low, indicating a well-performing model.')
         else:
             print('\tThe log loss for the testing data is moderate, indicating a weakly-performing model.')
+    else:
+        pass
 
     ### --- Clasification Reports --- ###
     

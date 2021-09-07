@@ -1,4 +1,4 @@
-"""A collection of functions for Phase 2 Project (revisited)
+"""Collections of Personal Functions for data cleaning, EDA, and modeling tasks.
 - Ben McCarty
 - bmccarty505@gmail.com"""
 
