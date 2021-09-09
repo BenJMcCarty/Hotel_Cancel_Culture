@@ -55,7 +55,9 @@ Questions to consider:
     * Target variable is "`is_canceled`," representing whether the reservation actualized (stayed and checked-out) or if the reservation cancelled 
         * Cancellations include a small number of no-show reservations; considered to be canceled for analysis and predictions
 * What are the properties of the variables you intend to use?
-    * Mix of categorical and continuous data, such as room type booked/assigned; number of guests; rate; and meal type purchased with reservation.
+    * Mix of categorical and continuous data,such as:
+        * Categorical variables: room type booked/assigned; country of origin; and meal type purchased with reservation.
+        * Continuous variables: number of guests; rate; number of special requests; etc..
 ***
 
 ## Methods
@@ -67,11 +69,18 @@ Questions to consider:
 * How did you prepare, analyze or model the data?
     * Preparations included:
         * Addressing missing values by dropping a characteristic with 95% of the values missing
-        * Filling missing values for the "agent" characteristic with a placeholder value
         * Filling in the few remaining missing entries with the most frequent values for each characteristic
+        * Converting the `agent` identifier characteristic into four groups (vs. the original 300+ values)
+
     * Exploratory analysis included statistical overviews and visualizations of each characteristic's data
+
     * Modeling techniques utilized a logisitic regression model as well as variations of tree-based models
-        * Logisitic regression results can be calculated as the odds that a 
+        * Logisitic regression:
+            * Results are easily interpretable and are quickly available - required in a fast-paced work environment requiring decisiveness
+            * Does not handle extreme/irregular data well
+        * Tree-based models:
+            * Handle extreme/irregular data better than logistic regression (e.g. a guest had an extreme number of requests; rates signficantly higher than average due to major events; frequently booking and canceling reservations)
+            * Results are more difficult to interpret, requiring additional tools and understanding to interpret
 * Why is this approach appropriate given the data and the business problem?
 
 ***
