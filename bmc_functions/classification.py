@@ -199,7 +199,7 @@ def cf_rpt_results(y_true, y_preds, metric):
 
 ##
 def evaluate_classification(model,X_train, y_train, X_test, y_test,
-                            metric = 'accuracy', verbose = True, 
+                            metric = 'accuracy', verbose = True, train_clf_rpt = False,
                             cmap='Blues',normalize='true',figsize=(10,4), labels=None):                 
     """[summary]
     
@@ -283,20 +283,23 @@ def evaluate_classification(model,X_train, y_train, X_test, y_test,
     curve.ax_.plot([0,1],[0,1], ls=':')
     plt.tight_layout()
     plt.show()
+    plt.close()
 
-    print('\n|' + '----'*7 + ' Classification Report - Training Data ' + '---'*8 + '|\n')
-    print(metrics.classification_report(y_train, y_hat_train,
-                                target_names=labels))
+    if train_clf_rpt == True:
+        print('\n|' + '----'*7 + ' Classification Report - Training Data ' + '---'*8 + '|\n')
+        print(metrics.classification_report(y_train, y_hat_train,
+                                    target_names=labels))
 
-    fig, ax = plt.subplots(ncols=2, figsize = figsize)
-    metrics.plot_confusion_matrix(model, X_train,y_train,cmap=cmap,
-                            normalize=normalize, display_labels=labels,
-                            ax=ax[0])
+        fig, ax = plt.subplots(ncols=2, figsize = figsize)
+        metrics.plot_confusion_matrix(model, X_train,y_train,cmap=cmap,
+                                normalize=normalize, display_labels=labels,
+                                ax=ax[0])
 
-    curve = metrics.plot_roc_curve(model, X_train,y_train,ax=ax[1])
-    curve.ax_.grid()
-    curve.ax_.plot([0,1],[0,1], ls=':')
-    plt.tight_layout()
-    plt.show()
+        curve = metrics.plot_roc_curve(model, X_train,y_train,ax=ax[1])
+        curve.ax_.grid()
+        curve.ax_.plot([0,1],[0,1], ls=':')
+        plt.tight_layout()
+        plt.show()
+        plt.close()
 
     return None

@@ -68,7 +68,8 @@ Describe the process for analyzing or modeling the data. For Phase 1, this will 
 Questions to consider:
 * How did you prepare, analyze or model the data?
     * Preparations included:
-        * Addressing missing values by dropping a characteristic with 95% of the values missing
+        * Addressing missing values by dropping `company` with 95% of the values missing
+            * In my experience, reservations are unlikely to include this information directly
         * Filling in the few remaining missing entries with the most frequent values for each characteristic
         * Converting the `agent` identifier characteristic into four groups (vs. the original 300+ values)
 
@@ -81,6 +82,7 @@ Questions to consider:
         * Tree-based models:
             * Handle extreme/irregular data better than logistic regression (e.g. a guest had an extreme number of requests; rates signficantly higher than average due to major events; frequently booking and canceling reservations)
             * Results are more difficult to interpret, requiring additional tools and understanding to interpret
+
 * Why is this approach appropriate given the data and the business problem?
 
 ***
