@@ -66,9 +66,14 @@ Describe the process for analyzing or modeling the data. For Phase 1, this will 
 Questions to consider:
 * How did you prepare, analyze or model the data?
     * Preparations included:
-        * Addressing missing values by dropping a characteristic with 95% of the values missing; filling missing values for the "agent" characteristic with a placeholder value; and filling in the few remaining missing entries with the most frequent values for each characteristic.
-        * Creating 
+        * Addressing missing values by dropping a characteristic with 95% of the values missing
+        * Filling missing values for the "agent" characteristic with a placeholder value
+        * Filling in the few remaining missing entries with the most frequent values for each characteristic
+    * Exploratory analysis included statistical overviews and visualizations of each characteristic's data
+    * Modeling techniques utilized a logisitic regression model as well as variations of tree-based models
+        * Logisitic regression results can be calculated as the odds that a 
 * Why is this approach appropriate given the data and the business problem?
+
 ***
 
 ## Results
