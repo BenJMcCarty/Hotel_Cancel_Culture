@@ -42,7 +42,8 @@ Summary of the business problem you are trying to solve, and the data questions 
 
 ## Data
 
-Describe the data being used for this project.
+### Data Overview - Emphasize target feature?
+![graph1](./images/viz1.png)
 
 ***
 Questions to consider:
@@ -62,7 +63,8 @@ Questions to consider:
 
 ## Methods
 
-Describe the process for analyzing or modeling the data. For Phase 1, this will be descriptive analysis.
+### EDA and Prep Work
+![graph1](./images/viz1.png)
 
 ***
 Questions to consider:
@@ -91,20 +93,103 @@ Questions to consider:
 
 Present your key results. For Phase 1, this will be findings from your descriptive analysis.
 
-***
-Questions to consider:
-* How do you interpret the results?
-* How confident are you that your results would generalize beyond the data you have?
-***
+**Results**
 
-Here is an example of how to embed images from your sub-folder:
-
-### Visual 1
+### Logistic Regression Log-Odds
 ![graph1](./images/viz1.png)
+
+* Most likely to cancel:
+    * Logistic Regression:
+        * Deposit Type: Non-Refundable
+            * May be pre-paid/third-party reservations that require the guest to pay in advance to the booking group
+        * Arrival Month: December
+            * Weather-related cancellations
+            * Booking in advance, but changing plans
+        * Reserved Room Type: P
+            * Prior experience: room types were basic-top tiers, letters a-z
+                * This would indicate the room would be a high-quality/luxury-type room
+            * Due to anonymization of data, cannot interpret too clearly/deeply
+                * Specific room details (i.e. basic, upgraded, deluxe, luxury, suite, etc.) would deepen understanding
+
+* Least likely to cancel:
+    * Logistic Regression:
+        * Required Car Parking Spaces
+            * *IFF* guests inlcude these details on reservation *prior to arrival,* then would indicate follow-through/commitment to booking
+            * Strong possibility for this information not to be available prior to arrival
+                * Future work: remove this feature and re-train/-test model's performance
+        * Arrival Month: January
+            * Post-holiday return to work; fewer holiday plans being changed/canceled
+        * Country: LTU
+            * Requires further investigation
+            * Future work: compare against other countries' results
+
+
+# ONLY USE FEAT IMP IF SHAP WORKING!
+
+### Feature Importances
+![graph1](./images/viz1.png)
+
+### SHAP Results
+![graph1](./images/viz1.png)
+
+* Extra Trees Classifier - Feature Importances:
+    * Country: PRT
+    * Lead Time
+    * Deposit Type: Non-Refundable
+    * Deposit Type: No Deposit
+    * Total of Special Requests
+    * ADR
+
+**Generalizability**
+
+* Dependent on availability of information
+    * Inconsistent availability - sometimes have certain info (company, # car spots, country), sometimes not
+    * Future work: reduce features to the minimums to increase applicability
+* Depends on maintaining trends
+    * Reliant on historical records
+        * COVID creates major challenge due to foundational disruptions
+            * E.G. travel restrictions; remote work vs. business travel; limitations on events; guest concerns about travel/cleanliness
+    * Future work: add means to "learn" from new data/trends
+* Does not take into account additional demand generators:
+    * Major regional/local events
+        * Expos, conferences, music festivals, etc.
+    * Sales/promos
+* Does not factor for short-term/immediate trends
+    * Local conditions, such as a snowstorm, may cause last-minute bookings/cancellations that are not predictable by this model
+    * Future work: short-term, in-the-day/for-the-day analysis/advice
+
+
 
 ## Conclusions
 
 Provide your conclusions about the work you've done, including any limitations or next steps.
+
+**RECOMMENDATIONS**
+
+Log-Reg-Based:
+* Check % non-refundable that are OTA bookings - consider capping bookings to limit risk of cancellations
+* Allow for more overbookings in November/December - higher likelihood of cancellations opening up availability
+* Allow for fewer overbookings in January/February - lower likelihood of cancellations increases risk of overselling hotel
+
+Random-Forest-Based:
+* 
+* 
+* 
+
+**Considerations**
+
+* While the likelihood of a cancellation is an important consideration, need to consider ADR and incidental revenue (food/beverage outside of packages; additional amenities (spa, golf, etc.))
+* These are guidelines, not hard-and-fast rules - on-going observations, evaluations, and adjustments are required to maximize revenue
+
+**Next Steps**
+* Increase generalizability by removing certain features based on personal experience
+    * Certain features are less likely to be present/distinct on reservations:
+        * number of adults/children/babies usually isn't specified (in my experience) - usually some default value of 1 or 2 adults
+            * Not the case for all hotels, though!
+        * previous cancellations/bookings not cancelled dependent on repeat guest status - drop repeat guest status as it doesn't explain any more detail
+
+
+
 
 ***
 Questions to consider:
