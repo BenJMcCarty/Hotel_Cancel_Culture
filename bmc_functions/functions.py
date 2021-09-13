@@ -13,7 +13,7 @@ from scipy import stats
 
 import matplotlib.pyplot as plt
 import matplotlib as mpl
-import seaborn as sns   
+import seaborn as sns
 
 import statsmodels.formula.api as smf
 import statsmodels.api as sms

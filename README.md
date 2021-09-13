@@ -43,9 +43,11 @@ Summary of the business problem you are trying to solve, and the data questions 
 ## Data
 
 ### Data Overview - Emphasize target feature?
-![graph1](./images/viz1.png)
 
-***
+
+---
+![Cancellation Breakdown](./img/cxl_stat.png)
+
 Questions to consider:
 * Where did the data come from, and how do they relate to the data analysis questions?
     * Reservation data originally sourced from two anonymous hotels in Europe
@@ -95,8 +97,8 @@ Present your key results. For Phase 1, this will be findings from your descripti
 
 **Results**
 
-### Logistic Regression Log-Odds
-![graph1](./images/viz1.png)
+### Logistic Regression Results
+![log_odds](./img/log_odds.png)
 
 * Most likely to cancel:
     * Logistic Regression:
@@ -127,7 +129,6 @@ Present your key results. For Phase 1, this will be findings from your descripti
 # ONLY USE FEAT IMP IF SHAP WORKING!
 
 ### Feature Importances
-![graph1](./images/viz1.png)
 
 ### SHAP Results
 ![graph1](./images/viz1.png)
@@ -162,8 +163,6 @@ Present your key results. For Phase 1, this will be findings from your descripti
 
 ## Conclusions
 
-Provide your conclusions about the work you've done, including any limitations or next steps.
-
 **RECOMMENDATIONS**
 
 Log-Reg-Based:
@@ -182,36 +181,52 @@ Random-Forest-Based:
 * These are guidelines, not hard-and-fast rules - on-going observations, evaluations, and adjustments are required to maximize revenue
 
 **Next Steps**
+
 * Increase generalizability by removing certain features based on personal experience
     * Certain features are less likely to be present/distinct on reservations:
-        * number of adults/children/babies usually isn't specified (in my experience) - usually some default value of 1 or 2 adults
+        * Number of adults/children/babies usually isn't specified (in my experience) - usually some default value of 1 or 2 adults
             * Not the case for all hotels, though!
-        * previous cancellations/bookings not cancelled dependent on repeat guest status - drop repeat guest status as it doesn't explain any more detail
+        * Whether a guest is parking is determined during registration - not always indicated in advance
+            * Makes this feature less reliable for predictions
+        * Meals are not universally included on reservations, preventing hotels from using that feature for evaluations
 
-
-
-
-***
-Questions to consider:
-* What would you recommend the business do as a result of this work?
-* What are some reasons why your analysis might not fully solve the business problem?
-* What else could you do in the future to improve this project?
-***
-
+* Use the odds of cancellations for time series forecasting
+    * Add a new feature consisting of the odds of each feature to cancel
+    * Perform uni- and multi-variate time series modeling to forecast cancellations in the future
+    
 ## For More Information
 
-Please review our full analysis in [our Jupyter Notebook](./dsc-phase1-project-template.ipynb) or our [presentation](./DS_Project_Presentation.pdf).
+Please review our full analysis in [the main Jupyter Notebook](./Classification_Modeling.ipynb) or my [presentation](./Hotel_Cancel_Culture_Presentation.pdf).
 
-For any additional questions, please contact **name & email, name & email**
+For any additional questions, please reach out to me via:
+
+- [Email](mailto:bmccarty505@gmail.com)
+
+- [LinkedIn](www.linkedin.com/in/bmccarty505)
+
+- [GitHub](www.github.com/BenJMcCarty)
 
 ## Repository Structure
 
 Describe the structure of your repository and its contents, for example:
 
 ```
-├── README.md                           <- The top-level README for reviewers of this project
-├── dsc-phase1-project-template.ipynb   <- Narrative documentation of analysis in Jupyter notebook
-├── DS_Project_Presentation.pdf         <- PDF version of project presentation
-├── data                                <- Both sourced externally and generated from code
-└── images                              <- Both sourced externally and generated from code
+├── README.md
+├── Classification_Modeling.ipynb
+├── EDA_for_Classification.ipynb
+├── Hotel_Cancel_Culture_Presentation.pdf
+├── data
+    └── data_prepped.pickle
+    └── data_no_assigned.pickle
+    └── hotel_bookings.csv.gz
+    └── hotel_bookings.pickle
+├── img
+    └── log_odds.png
+└── bmc_functions
+    └── __init__.py
+    └──classification.py
+    └──eda.py
+    └──functions.py
+    └──regression.py
+    └──time_series_modeling.py
 ```
