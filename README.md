@@ -7,10 +7,8 @@ Authored by Ben McCarty
 * [LinkedIn](www.linkedin.com/in/bmccarty505)
 * [GitHub](https://github.com/BenJMcCarty)
 
-
+---
 ## Overview
-
-A one-paragraph overview of the project, including the business problem, data, methods, results and recommendations.
 
 * Problem: hotels need to know the likelihood of a reservation not actualizing (cancelling or DNA) for forecasting business
 * Data: reservation data from two European hotels from 2015-2017
@@ -18,6 +16,11 @@ A one-paragraph overview of the project, including the business problem, data, m
 * Results: *pending*
 * Recommendations: *pending*
 
+> *Insert attention-grabbing start line.*
+
+Every aspect of hospitality depends on accurately anticipating business demand: how many rooms to clean; how many rooms are available to sell; what would be the best rate; and particularly for the Front Desk, how to bring it all together to make every guest satisfied. Proper forecasting is critical to every department and staff member, and to generate our forecasts, we needed to know how many guests would cancel prior to arrival. Using data from two European hotels, I developed a model to predict whether a given reservation would cancel based on a variety of reservation features, including arrival date details; stay length; and rates. My results highlighted five features as the strongest indicators of cancellations. Based on those results, 
+
+---
 ## Business Problem
 
 Summary of the business problem you are trying to solve, and the data questions that you plan to answer in order to solve them.
@@ -39,13 +42,11 @@ Summary of the business problem you are trying to solve, and the data questions 
         * Addressing potential causes for cancellations (e.g. restricting number of bookings from an OTA with high likelihood of cancellations)
         * Minimizing reservation relocation costs in case of oversell
 
-
+---
 ## Data
 
 ### Data Overview - Emphasize target feature?
 
-
----
 ![Cancellation Breakdown](./img/cxl_stat.png)
 
 Questions to consider:
@@ -61,39 +62,32 @@ Questions to consider:
     * Mix of categorical and continuous data,such as:
         * Categorical variables: room type booked/assigned; country of origin; and meal type purchased with reservation.
         * Continuous variables: number of guests; rate; number of special requests; etc..
-***
 
+---
 ## Methods
 
 ### EDA and Prep Work
 ![graph1](./images/viz1.png)
 
-***
-Questions to consider:
-* How did you prepare, analyze or model the data?
-    * Preparations included:
-        * Addressing missing values by dropping `company` with 95% of the values missing
-            * In my experience, reservations are unlikely to include this information directly
-        * Filling in the few remaining missing entries with the most frequent values for each characteristic
-        * Converting the `agent` identifier characteristic into four groups (vs. the original 300+ values)
+* Preparations included:
+    * Addressing missing values by dropping `company` with 95% of the values missing
+        * In my experience, reservations are unlikely to include this information directly
+    * Filling in the few remaining missing entries with the most frequent values for each characteristic
+    * Converting the `agent` identifier characteristic into four groups (vs. the original 300+ values)
 
-    * Exploratory analysis included statistical overviews and visualizations of each characteristic's data
+* Exploratory analysis included statistical overviews and visualizations of each characteristic's data
 
-    * Modeling techniques utilized a logisitic regression model as well as variations of tree-based models
-        * Logisitic regression:
-            * Results are easily interpretable and are quickly available - required in a fast-paced work environment requiring decisiveness
-            * Does not handle extreme/irregular data well
-        * Tree-based models:
-            * Handle extreme/irregular data better than logistic regression (e.g. a guest had an extreme number of requests; rates signficantly higher than average due to major events; frequently booking and canceling reservations)
-            * Results are more difficult to interpret, requiring additional tools and understanding to interpret
+* Modeling techniques utilized a logisitic regression model as well as variations of tree-based models
+    * Logisitic regression:
+        * Results are easily interpretable and are quickly available - required in a fast-paced work environment requiring decisiveness
+        * Does not handle extreme/irregular data well
+    * Tree-based models:
+        * Handle extreme/irregular data better than logistic regression (e.g. a guest had an extreme number of requests; rates signficantly higher than average due to major events; frequently booking and canceling reservations)
+        * Results are more difficult to interpret, requiring additional tools and understanding to interpret
 
-* Why is this approach appropriate given the data and the business problem?
 
-***
-
+---
 ## Results
-
-Present your key results. For Phase 1, this will be findings from your descriptive analysis.
 
 **Results**
 
@@ -160,7 +154,7 @@ Present your key results. For Phase 1, this will be findings from your descripti
     * Future work: short-term, in-the-day/for-the-day analysis/advice
 
 
-
+---
 ## Conclusions
 
 **RECOMMENDATIONS**
@@ -171,9 +165,9 @@ Log-Reg-Based:
 * Allow for fewer overbookings in January/February - lower likelihood of cancellations increases risk of overselling hotel
 
 Random-Forest-Based:
-* 
-* 
-* 
+* test
+* test
+* test
 
 **Considerations**
 
@@ -193,7 +187,8 @@ Random-Forest-Based:
 * Use the odds of cancellations for time series forecasting
     * Add a new feature consisting of the odds of each feature to cancel
     * Perform uni- and multi-variate time series modeling to forecast cancellations in the future
-    
+
+---
 ## For More Information
 
 Please review our full analysis in [the main Jupyter Notebook](./Classification_Modeling.ipynb) or my [presentation](./Hotel_Cancel_Culture_Presentation.pdf).
@@ -206,6 +201,7 @@ For any additional questions, please reach out to me via:
 
 - [GitHub](www.github.com/BenJMcCarty)
 
+---
 ## Repository Structure
 
 Describe the structure of your repository and its contents, for example:

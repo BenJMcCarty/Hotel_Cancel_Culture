@@ -134,16 +134,18 @@ def plot_importances(model, X_train_df, count = 10, return_importances = False, 
     col_names =  list(map(lambda x: x.title().replace('_', ' '), list(X_train_df.columns)))
 
     importances = pd.Series(model.feature_importances_, index= col_names)
-    
-    importances = importances.sort_values(ascending = False)
 
-    ax = importances[:count].plot(kind= 'barh')
-    ax.set(title=f'Top {count} Most Important Predictors', xlabel='importance')
-    
+    fig, ax = plt.subplots()
+    ax = importances.sort_values(ascending = True)[-count:].plot(kind= 'barh')
+    ax.set(title=f'Top {count} Most Important Predictors', xlabel='Importance')
+    ax.set_facecolor('0.9')
+    fig.set_facecolor('0.975')
+
     plt.show()
     
     if save_fig == True:
-        plt.savefig(f'{model_name}_feat_imp.png')
+        plt.savefig(f'{model_name}_feat_imp.png',transparent=False, bbox_inches='tight',
+           dpi=100)
 
     plt.close()
 
