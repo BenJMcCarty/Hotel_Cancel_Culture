@@ -17,11 +17,20 @@ from sklearn.metrics._plot.precision_recall_curve import PrecisionRecallDisplay
 ## Generating scores for later comparisons
 
 def model_scores(model, X_train, y_train, X_test, y_test):
+    """[summary]
 
-    y_hat_train = model.predict(X_train)
+    Args:
+        model ([type]): [description]
+        X_train ([type]): [description]
+        y_train ([type]): [description]
+        X_test ([type]): [description]
+        y_test ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
+
     prob_train = model.predict_proba(X_train)
-
-    y_hat_test = model.predict(X_test)
     prob_test = model.predict_proba(X_test)
 
     base_train_ll = metrics.log_loss(y_train, prob_train).round(2)
@@ -35,6 +44,16 @@ def model_scores(model, X_train, y_train, X_test, y_test):
 
 ##
 def plot_comparison_hist(data, feature, target = None, bins = 'auto', alt_name = None, save_fig=False):
+    """[summary]
+
+    Args:
+        data ([type]): [description]
+        feature ([type]): [description]
+        target ([type], optional): [description]. Defaults to None.
+        bins (str, optional): [description]. Defaults to 'auto'.
+        alt_name ([type], optional): [description]. Defaults to None.
+        save_fig (bool, optional): [description]. Defaults to False.
+    """
 
     feature_name = feature.replace("_", " ").replace("'", "").title()
     
@@ -64,6 +83,15 @@ def plot_comparison_hist(data, feature, target = None, bins = 'auto', alt_name =
 ##
 def plot_comparison_count(data,feature, target = 'review_scores_rating',
                     save_fig=False, print_target = None):
+    """[summary]
+
+    Args:
+        data ([type]): [description]
+        feature ([type]): [description]
+        target (str, optional): [description]. Defaults to 'review_scores_rating'.
+        save_fig (bool, optional): [description]. Defaults to False.
+        print_target ([type], optional): [description]. Defaults to None.
+    """
 
     feature_name = feature.replace("_", " ").title()
     
@@ -94,6 +122,16 @@ def plot_comparison_count(data,feature, target = 'review_scores_rating',
 
 ##
 def plot_depths(fitted_model, verbose = False):
+    """[summary]
+
+    Args:
+        fitted_model ([type]): [description]
+        verbose (bool, optional): [description]. Defaults to False.
+
+    Returns:
+        [type]: [description]
+    """
+
     depths = []
 
     for i in fitted_model.estimators_:
@@ -115,7 +153,7 @@ def plot_depths(fitted_model, verbose = False):
         return depths
 
 ##
-def plot_importances(model, X_train_df, count = 10, return_importances = False, model_name = None, save_fig = False):
+def plot_importances(model, X_train_df, count = 10, return_importances = False):
     """Given a fitted classification model with feature importances, creates a 
     horizontal barplot of the top 10 most important features.
 
@@ -140,13 +178,10 @@ def plot_importances(model, X_train_df, count = 10, return_importances = False, 
     ax.set(title=f'Top {count} Most Important Predictors', xlabel='Importance')
     ax.set_facecolor('0.9')
     fig.set_facecolor('0.975')
+    
+    plt.savefig(f'./img/feature_importances.png',transparent=False, bbox_inches='tight', dpi=150)
 
     plt.show()
-    
-    if save_fig == True:
-        plt.savefig(f'{model_name}_feat_imp.png',transparent=False, bbox_inches='tight',
-           dpi=100)
-
     plt.close()
 
     if return_importances == True:
@@ -303,5 +338,61 @@ def evaluate_classification(model,X_train, y_train, X_test, y_test,
         plt.tight_layout()
         plt.show()
         plt.close()
+
+    return None
+
+
+def plot_log_odds(model, dataframe):
+    """[summary]
+
+    Args:
+        model ([type]): [description]
+        dataframe ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """    """[summary]
+
+    Args:
+        model ([type]): [description]
+        dataframe ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
+
+    ## Collecting coefficients for each feature as a Series
+    lr_coefs = pd.Series(model.coef_.flatten(), index=dataframe.columns)
+    lr_coefs.sort_values(ascending=False, inplace=True)
+
+    ## Converting top/bottom 5 values into a Series
+    log_odds = pd.concat([lr_coefs.head(5), lr_coefs.tail(5)])
+
+    ## Formatting index labels to become visualization labels
+    new_labels_list = [i.replace('_', ' ').title() for i in list(log_odds.index)]
+
+    ## Creating a dictionary to replace the old lables with the new ones
+    new_labels_dict = { k:v for (k,v) in zip(log_odds.index, new_labels_list)}
+
+    ## Renaming Series index
+    log_odds = log_odds.rename(new_labels_dict)
+    log_odds.sort_values(inplace=True)
+    ## Visualizing log-odds
+    fig, ax = plt.subplots(figsize=(8,5))
+
+    ax = log_odds.plot(kind='barh', ax=ax)
+    ax.axvline(linestyle = '-', c='k')
+    ax.set_xlabel('Coefficients')
+    ax.set_ylabel('Feature Name')
+    fig.suptitle('Top & Bottom Five Features')
+    ax.set_facecolor('0.9')
+    fig.set_facecolor('0.975')
+    plt.tight_layout()
+
+    plt.savefig('./img/log_odds.png',transparent=False, bbox_inches='tight',
+            dpi=150)
+    
+    plt.show()
+    plt.close()
 
     return None

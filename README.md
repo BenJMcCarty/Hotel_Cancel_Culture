@@ -23,41 +23,45 @@ Every aspect of hospitality depends on accurately anticipating business demand: 
 ---
 ## Business Problem
 
-Summary of the business problem you are trying to solve, and the data questions that you plan to answer in order to solve them.
 
+* Maximizing revenue:
+    *   Cancellations/no-shows negatively impact revenue - prevent other bookings; hard to collect on no-show reservations
+    * Anticipating number of no-show reservations
+    * Determining by how many rooms to oversell (assuming cancellations/no-shows)
 
-* What are the business's pain points related to this project?
-    * Cancellations/no-shows negatively impact revenue - prevent other bookings; hard to collect on no-show reservations
+* Minimizing costs:
     * Operations teams rely heavily on accurate forecasts for scheduling and supplies
-    
+    * Minimizing labor, supply costs using accuarate occupancy forecasts
+    * Addressing potential causes for cancellations (e.g. restricting number of bookings from an OTA with high likelihood of cancellations)
+    * Minimizing reservation relocation costs in case of oversell
+
+* Hotel teams need to know what reservation characteristics can help them determine the number of cancellations
+    * What is the impact of the booking date on the odds of a cancellation?
+    * Are reservations from a particular booking agent more likely to cancel than others?
+
 * How did you pick the data analysis question(s) that you did?
     * Prior experience in industry - aim to minimize disruption to guests and hotel staff; increase revenue by identifying reservations most likely to cancel to confirm bookings in advance
-
-* Why are these questions important from a business perspective?
-    * Maximizing revenue:
-        * Anticipating number of no-show reservations
-        * Determining by how many rooms to oversell (assuming cancellations/no-shows)
-    * Minimizing costs:
-        * Minimizing labor, supply costs using accuarate occupancy forecasts
-        * Addressing potential causes for cancellations (e.g. restricting number of bookings from an OTA with high likelihood of cancellations)
-        * Minimizing reservation relocation costs in case of oversell
 
 ---
 ## Data
 
-### Data Overview - Emphasize target feature?
 
 ![Cancellation Breakdown](./img/cxl_stat.png)
 
-Questions to consider:
+> *Breakdown of reservations between checkouts and cancellations*
+
+
 * Where did the data come from, and how do they relate to the data analysis questions?
     * Reservation data originally sourced from two anonymous hotels in Europe
+
 * What do the data represent? Who is in the sample and what variables are included?
     * Each observation represents a single reservation
     * Reservation characteristics are common for most hotels (e.g. room types, marketing details, rates, and room types)
+
 * What is the target variable?
     * Target variable is "`is_canceled`," representing whether the reservation actualized (stayed and checked-out) or if the reservation cancelled 
         * Cancellations include a small number of no-show reservations; considered to be canceled for analysis and predictions
+
 * What are the properties of the variables you intend to use?
     * Mix of categorical and continuous data,such as:
         * Categorical variables: room type booked/assigned; country of origin; and meal type purchased with reservation.
@@ -76,6 +80,9 @@ Questions to consider:
     * Converting the `agent` identifier characteristic into four groups (vs. the original 300+ values)
 
 * Exploratory analysis included statistical overviews and visualizations of each characteristic's data
+
+---
+## Modeling and Evaluating Results
 
 * Modeling techniques utilized a logisitic regression model as well as variations of tree-based models
     * Logisitic regression:
