@@ -1,4 +1,8 @@
-# Cancel Culture in Hospitality
+![Title Slide](./extra/title_background.jpg)
+</br>
+</br>
+</br>
+# Hotel Cancel Culture
 *Predicting hotel reservation cancellations through machine learning modeling.*
 
 Authored by Ben McCarty

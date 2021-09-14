@@ -342,8 +342,17 @@ def evaluate_classification(model,X_train, y_train, X_test, y_test,
     return None
 
 
-def plot_log_odds(model, dataframe):
+def plot_log_odds(model, dataframe, num_feats=3):
     """[summary]
+
+    Args:
+        model ([type]): [description]
+        dataframe ([type]): [description]
+        num_feats (int, optional): [description]. Defaults to 3.
+
+    Returns:
+        [type]: [description]
+    """    """[summary]
 
     Args:
         model ([type]): [description]
@@ -366,7 +375,7 @@ def plot_log_odds(model, dataframe):
     lr_coefs.sort_values(ascending=False, inplace=True)
 
     ## Converting top/bottom 5 values into a Series
-    log_odds = pd.concat([lr_coefs.head(5), lr_coefs.tail(5)])
+    log_odds = pd.concat([lr_coefs.head(num_feats), lr_coefs.tail(num_feats)])
 
     ## Formatting index labels to become visualization labels
     new_labels_list = [i.replace('_', ' ').title() for i in list(log_odds.index)]
@@ -382,14 +391,14 @@ def plot_log_odds(model, dataframe):
 
     ax = log_odds.plot(kind='barh', ax=ax)
     ax.axvline(linestyle = '-', c='k')
-    ax.set_xlabel('Coefficients')
+    ax.set_xlabel('Coefficient')
     ax.set_ylabel('Feature Name')
-    fig.suptitle('Top & Bottom Five Features')
+    fig.suptitle(f'Top & Bottom {num_feats} Features')
     ax.set_facecolor('0.9')
     fig.set_facecolor('0.975')
     plt.tight_layout()
 
-    plt.savefig('./img/log_odds.png',transparent=False, bbox_inches='tight',
+    plt.savefig('./img/logreg_coefs.png',transparent=False, bbox_inches='tight',
             dpi=150)
     
     plt.show()
