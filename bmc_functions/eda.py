@@ -359,8 +359,14 @@ def explore_feature(dataframe, column_name, show_visualization, target_feature= 
 
     ## Creating dataframe for .value_counts() results
     if bins == None:
-        vc_cxl = pd.DataFrame(positive.value_counts(dropna=False, normalize=normalize, sort=sort_val).sort_index()).applymap("{0:.2%}".format)
-        vc_co = pd.DataFrame(negative.value_counts(dropna=False, normalize=normalize, sort=sort_val).sort_index()).applymap("{0:.2%}".format)
+        vc_cxl = pd.DataFrame(positive.value_counts(dropna=False, normalize=normalize, sort=sort_val).sort_index())
+        vc_co = pd.DataFrame(negative.value_counts(dropna=False, normalize=normalize, sort=sort_val).sort_index())
+
+        if normalize == True:
+            vc_cxl = vc_cxl.applymap("{0:.2%}".format)
+            vc_co = vc_co.applymap("{0:.2%}".format)
+        else:
+            pass
 
         # Creating placeholder row for dataframe legibility
         vc_cxl = vc_cxl.T

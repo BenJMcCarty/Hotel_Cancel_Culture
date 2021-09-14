@@ -1,15 +1,18 @@
-![Title Slide](./extra/title_background.jpg)
+![Title Slide](./img/title.png)
 </br>
 </br>
 </br>
+
+---
+
+</br>
+</br>
+
 # Hotel Cancel Culture
+
 *Predicting hotel reservation cancellations through machine learning modeling.*
 
-Authored by Ben McCarty
-
-* [Email](mailto:bmccarty505@gmail.com)
-* [LinkedIn](www.linkedin.com/in/bmccarty505)
-* [GitHub](https://github.com/BenJMcCarty)
+Author: Ben McCarty
 
 ---
 ## Overview
