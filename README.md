@@ -17,37 +17,24 @@ Author: Ben McCarty
 ---
 ## Overview
 
-* Problem: hotels need to know the likelihood of a reservation not actualizing (cancelling or DNA) for forecasting business
-* Data: reservation data from two European hotels from 2015-2017
-* Methods: performed machine learning modeling techniques to determine the top reservation details to indicate whether a reservation wil actualize
-* Results: *pending*
-* Recommendations: *pending*
+> *Have you ever booked a reservation at a hotel, only to find out that your reservation was relocated somewhere else? Or tried to book a reservation for a big concert or event, only to find out the hotel is sold out?*
 
-> *Insert attention-grabbing start line.*
-
-Every aspect of hospitality depends on accurately anticipating business demand: how many rooms to clean; how many rooms are available to sell; what would be the best rate; and how to bring it all together to make every guest satisfied. Proper forecasting is critical to every department and staff member, and to generate our forecasts, we needed to know how many guests would cancel prior to arrival. Using data from two European hotels, I developed a model to predict whether a given reservation would cancel based on a variety of reservation features, including arrival date details; stay length; and rates. My results highlighted three features as the strongest predictors of cancellations, and 
+**Every aspect of hospitality depends on accurately anticipating business demand: how many rooms to clean; how many rooms are available to sell; what would be the best rate; and how to bring it all together to make every guest satisfied.** Proper forecasting is critical to every department and staff member, and to generate our forecasts, hotel managers need to know how many guests will cancel prior to arrival. Using data from two European hotels, I developed a model to predict whether a given reservation would cancel based on 30 different reservation details. My results highlighted three features as the strongest predictors of cancellations, and the results may surprise you!
 
 ---
 ## Business Problem
 
+Hotels sell more than room rentals - they sell an *experience.* As a six-year veteran of hotel Operations teams, I learned there is a constant balancing act performed on a daily basis: **how can we sell as many rooms as possible without over-booking?**
 
-* Maximizing revenue:
-    *   Cancellations/no-shows negatively impact revenue - prevent other bookings; hard to collect on no-show reservations
-    * Anticipating number of no-show reservations
-    * Determining by how many rooms to oversell (assuming cancellations/no-shows)
+Hotels, like any business, aim to maximize their revenue and minimize costs. However, plans change. Reservations booked a year in advance may suddenly cancel due to anything from a stomach ache to COVID-19. While the recent pandemic is certainly an anomaly when it comes to predicting and forecasting cancellations, **hotels already strive to optimize their sales, and to that end, they need to know which reservations are most likely to cancel, opening up more rooms for sale.**
 
-* Minimizing costs:
-    * Operations teams rely heavily on accurate forecasts for scheduling and supplies
-    * Minimizing labor, supply costs using accuarate occupancy forecasts
-    * Addressing potential causes for cancellations (e.g. restricting number of bookings from an OTA with high likelihood of cancellations)
-    * Minimizing reservation relocation costs in case of oversell
+Cancellations and no-shows negatively impact revenue by preventing other bookings - and in the case of no-shows, it is notoriously difficult to collect on any fees. One solution is to allow for a certain number of over-bookings during busy times. Overselling a hotel helps account for cancellations by allowing reservations to exceed hotel capacity with the expectation that reservations will cancel or not arrive. *This isn't without risk, though.*
 
-* Hotel teams need to know what reservation characteristics can help them determine the number of cancellations
-    * What is the impact of the booking date on the odds of a cancellation?
-    * Are reservations from a particular booking agent more likely to cancel than others?
+When a hotel over-books and reach full occupancy, any guest arriving late may end up not having a room. In those cases, hotels relocate the reservation to another nearby hotel at the htoel's expense. If you never experienced being "walked" by a hotel, trust me, being relocated is not a pleasant experience for you or the staff.
 
-* How did you pick the data analysis question(s) that you did?
-    * Prior experience in industry - aim to minimize disruption to guests and hotel staff; increase revenue by identifying reservations most likely to cancel to confirm bookings in advance
+Beyond the costs of "walking" guests, hotel teams need precise forecasts of how busy the hotel will be, and these forecasts rely on predicting cancellations. From scheduling to supplies, hote managers need to be able to anticipate how busy the hotel will be. As a prior hotel operations manager, my main focus would range from 0 days (same-day arrivals) to ten days ahead of time. I needed to know how many staff members to schedule and when. I needed to prepare for oversold days. I needed to know my guests, their needs, and how to maintain the balancing act between guest and business needs.
+
+My newly-developed data science skills give me the techniques I need to predict cancellations, but I still rely on one key thing: *the data*.
 
 ---
 ## Data
@@ -57,131 +44,83 @@ Every aspect of hospitality depends on accurately anticipating business demand: 
 
 > *Breakdown of reservations between checkouts and cancellations*
 
+My dataset came from [this Kaggle dataset](https://www.kaggle.com/jessemostipak/hotel-booking-demand) and is originally sourced from the following article:
 
-* Where did the data come from, and how do they relate to the data analysis questions?
-    * Reservation data originally sourced from two anonymous hotels in Europe
+> Nuno Antonio, Ana de Almeida, Luis Nunes,
+> 
+> Hotel booking demand datasets,
+> 
+> Data in Brief,
+> 
+> Volume 22,
+> 
+> 2019,
+> 
+> Pages 41-49,
+> 
+> ISSN 2352-3409,
+> 
+> https://doi.org/10.1016/j.dib.2018.11.126.
+> 
+> (https://www.sciencedirect.com/science/article/pii/S2352340918315191)
+> 
+> Abstract: This data article describes two datasets with hotel demand data. One of the hotels (H1) is a resort hotel and the other is a city hotel (H2). Both datasets share the same structure, with 31 variables describing the 40,060 observations of H1 and 79,330 observations of H2. Each observation represents a hotel booking. Both datasets comprehend bookings due to arrive between the 1st of July of 2015 and the 31st of August 2017, including bookings that effectively arrived and bookings that were canceled. Since this is hotel real data, all data elements pertaining hotel or costumer identification were deleted. Due to the scarcity of real business data for scientific and educational purposes, these datasets can have an important role for research and education in revenue management, machine learning, or data mining, as well as in other fields.
 
-* What do the data represent? Who is in the sample and what variables are included?
-    * Each observation represents a single reservation
-    * Reservation characteristics are common for most hotels (e.g. room types, marketing details, rates, and room types)
 
-* What is the target variable?
-    * Target variable is "`is_canceled`," representing whether the reservation actualized (stayed and checked-out) or if the reservation cancelled 
-        * Cancellations include a small number of no-show reservations; considered to be canceled for analysis and predictions
+As mentioned in the abstract, this reservation data was originally sourced from two anonymous hotels in Europe. Each observation represents a single reservation, witch characteristics common for most hotels (e.g. room types, marketing details, rates, and room types).
 
-* What are the properties of the variables you intend to use?
-    * Mix of categorical and continuous data,such as:
-        * Categorical variables: room type booked/assigned; country of origin; and meal type purchased with reservation.
-        * Continuous variables: number of guests; rate; number of special requests; etc..
+My target variable is "`is_canceled`," representing whether the reservation actualized (stayed and checked-out) or if the reservation cancelled. These cancellations include a negligible number of no-show reservations and are considered to be canceled for analysis and predictions.
 
 ---
 ## Methods
 
 ### EDA and Prep Work
-![graph1](./images/viz1.png)
 
-* Preparations included:
-    * Addressing missing values by dropping `company` with 95% of the values missing
-        * In my experience, reservations are unlikely to include this information directly
+My preparations included:
+    * Addressing missing values by dropping the `company` feature with 95% of the values missing
     * Filling in the few remaining missing entries with the most frequent values for each characteristic
-    * Converting the `agent` identifier characteristic into four groups (vs. the original 300+ values)
+    * Condensing large categorical features (100+ categories) into 4-5 distinct categories summarizing the categories with the strongest impacts.
 
-* Exploratory analysis included statistical overviews and visualizations of each characteristic's data
+Additionally, my exploratory analysis included statistical overviews each characteristic's data, giving insight into extreme values as well as highlighting such large categorical features.
 
 ---
 ## Modeling and Evaluating Results
 
-* Modeling techniques utilized a logisitic regression model as well as variations of tree-based models
-    * Logisitic regression:
-        * Results are easily interpretable and are quickly available - required in a fast-paced work environment requiring decisiveness
-        * Does not handle extreme/irregular data well
-    * Tree-based models:
-        * Handle extreme/irregular data better than logistic regression (e.g. a guest had an extreme number of requests; rates signficantly higher than average due to major events; frequently booking and canceling reservations)
-        * Results are more difficult to interpret, requiring additional tools and understanding to interpret
+I chose to use a Random Forest Classifier for my final predictions as they handle extreme/irregular data better than logistic regressions (e.g. a guest had an extreme number of requests; rates signficantly higher than average due to major events; frequently booking and canceling reservations).
 
+However, the results are more difficult to interpret, requiring additional tools to interpret effectively. I used SHAP visualization techniques to help identify the most important aspects of a guest's stay and their impact.
 
 ---
 ## Results
 
 **Results**
 
-### Logistic Regression Results
-![log_odds](./img/log_odds.png)
-
-* Most likely to cancel:
-    * Logistic Regression:
-        * Deposit Type: Non-Refundable
-            * May be pre-paid/third-party reservations that require the guest to pay in advance to the booking group
-        * Arrival Month: December
-            * Weather-related cancellations
-            * Booking in advance, but changing plans
-        * Reserved Room Type: P
-            * Prior experience: room types were basic-top tiers, letters a-z
-                * This would indicate the room would be a high-quality/luxury-type room
-            * Due to anonymization of data, cannot interpret too clearly/deeply
-                * Specific room details (i.e. basic, upgraded, deluxe, luxury, suite, etc.) would deepen understanding
-
-* Least likely to cancel:
-    * Logistic Regression:
-        * Required Car Parking Spaces
-            * *IFF* guests inlcude these details on reservation *prior to arrival,* then would indicate follow-through/commitment to booking
-            * Strong possibility for this information not to be available prior to arrival
-                * Future work: remove this feature and re-train/-test model's performance
-        * Arrival Month: January
-            * Post-holiday return to work; fewer holiday plans being changed/canceled
-        * Country: LTU
-            * Requires further investigation
-            * Future work: compare against other countries' results
-
-
-# ONLY USE FEAT IMP IF SHAP WORKING!
-
-### Feature Importances
-
 ### SHAP Results
-![graph1](./images/viz1.png)
+![SHAP](./img/SHAP_results_RFC.png)
 
-* Extra Trees Classifier - Feature Importances:
-    * Country: PRT
-    * Lead Time
-    * Deposit Type: Non-Refundable
-    * Deposit Type: No Deposit
-    * Total of Special Requests
-    * ADR
+> Based on the results of my RandomForestClassifier and visualization of my SHAP plot, I determined that...
+* Reservations from Portugal are more likely to cancel vs. reservations from other countries
+* Reservations with no special requests are more likely to cancel - however any amount of requests may decrease likelihood of cancellation
+* Higher lead times show a slightly positive relationship with cancellations
+* Reservations listed not as "non-refundable" are less likely to cancel
+* Reservations listed as "no deposit" are less likely to cancel
 
 **Generalizability**
 
-* Dependent on availability of information
-    * Inconsistent availability - sometimes have certain info (company, # car spots, country), sometimes not
-    * Future work: reduce features to the minimums to increase applicability
-* Depends on maintaining trends
-    * Reliant on historical records
-        * COVID creates major challenge due to foundational disruptions
-            * E.G. travel restrictions; remote work vs. business travel; limitations on events; guest concerns about travel/cleanliness
-    * Future work: add means to "learn" from new data/trends
-* Does not take into account additional demand generators:
-    * Major regional/local events
-        * Expos, conferences, music festivals, etc.
-    * Sales/promos
-* Does not factor for short-term/immediate trends
-    * Local conditions, such as a snowstorm, may cause last-minute bookings/cancellations that are not predictable by this model
-    * Future work: short-term, in-the-day/for-the-day analysis/advice
-
+These results are dependent on availability of information - some information is not consistently available, or available at all for some hotels. Furthermore, these results assume relatively stable trends as they depend on historical records. Anomalies such as COVID-19 cause radical shifts in the nature of travel, potentially requiring hotel teams to ignore the old data and assumptions. Finally, this analysis does not take into consideration demand generators occurring close to booking - bad weather, event cancellations, etc. may increase cancellations *or cause surges in bookings to avoid icy roads or power outages.*
 
 ---
 ## Conclusions
 
 **RECOMMENDATIONS**
 
-Log-Reg-Based:
-* Check % non-refundable that are OTA bookings - consider capping bookings to limit risk of cancellations
-* Allow for more overbookings in November/December - higher likelihood of cancellations opening up availability
-* Allow for fewer overbookings in January/February - lower likelihood of cancellations increases risk of overselling hotel
+Based on my results, I recommend these hotels should do the following:
 
-Random-Forest-Based:
-* test
-* test
-* test
+* Contact guests with long lead times to confirm bookings
+* Monitor bookings from Portugal versus other countries
+* Limit availability of non-refundable rates to prevent/limit risk of cancellations
+
+---
 
 **Considerations**
 
