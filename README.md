@@ -25,7 +25,7 @@ Author: Ben McCarty
 
 > *Insert attention-grabbing start line.*
 
-Every aspect of hospitality depends on accurately anticipating business demand: how many rooms to clean; how many rooms are available to sell; what would be the best rate; and particularly for the Front Desk, how to bring it all together to make every guest satisfied. Proper forecasting is critical to every department and staff member, and to generate our forecasts, we needed to know how many guests would cancel prior to arrival. Using data from two European hotels, I developed a model to predict whether a given reservation would cancel based on a variety of reservation features, including arrival date details; stay length; and rates. My results highlighted five features as the strongest indicators of cancellations. Based on those results, 
+Every aspect of hospitality depends on accurately anticipating business demand: how many rooms to clean; how many rooms are available to sell; what would be the best rate; and how to bring it all together to make every guest satisfied. Proper forecasting is critical to every department and staff member, and to generate our forecasts, we needed to know how many guests would cancel prior to arrival. Using data from two European hotels, I developed a model to predict whether a given reservation would cancel based on a variety of reservation features, including arrival date details; stay length; and rates. My results highlighted three features as the strongest predictors of cancellations, and 
 
 ---
 ## Business Problem

@@ -445,6 +445,9 @@ def explore_feature(dataframe, column_name, show_visualization, target_feature= 
         
         fig.show()
 
+        fig.data = []
+        # fig.layout = {}
+
     return df
 
 
