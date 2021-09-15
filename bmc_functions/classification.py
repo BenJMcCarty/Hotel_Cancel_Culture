@@ -217,7 +217,7 @@ def cf_rpt_results(y_true, y_preds, metric):
             metric == 'recall',
             metric == 'f1',
             metric == 'balanced accuracy',
-            metric == 'balanced precision',
+            metric == 'average precision',
             metric == 'balanced recall']
 
     choice = [cr_df.loc['accuracy'][2],
