@@ -9,7 +9,6 @@ import pandas as pd
 import scipy.stats as stats
 
 import matplotlib.pyplot as plt
-import matplotlib.colors as col
 import seaborn as sns
 import plotly.express as px
 
@@ -291,7 +290,7 @@ def report_df(dataframe):
     return report_df
 
 def plot_boxes(data, x_label, y_label, suptitle, figsize=(13,8)):
-    fig, ax = plt.subplots(figsize=figsize)
+    _, ax = plt.subplots(figsize=figsize)
     ax = sns.boxplot(data=data)
     ax.set_xlabel(x_label)
     ax.set_ylabel(y_label)
@@ -300,9 +299,9 @@ def plot_boxes(data, x_label, y_label, suptitle, figsize=(13,8)):
 
     return
 
-def explore_feature(dataframe, column_name, show_visualization, target_feature= 'is_canceled',
+def explore_feature(dataframe, column_name, show_visualization = False, target_feature= 'is_canceled',
                     plot_type = 'histogram', normalize = True,sort_val = True, 
-                    width = 800, height=600, bins=None,marginal=None,plot_label = None, plot_title=None):
+                    width = 800, height=600, bins=None, marginal=None, plot_label = None, plot_title=None):
     """Generates a dataframe summarizing .describe(), .value_counts(), and .dtypes for a given feature from a dataframe.
 
     Also creates a Plotly Express histogram plot for data representation w/ option for marginal box plot on x-axis.
@@ -330,29 +329,31 @@ def explore_feature(dataframe, column_name, show_visualization, target_feature= 
         [type]: [description]
     """    
 
-    print('\n|','---'*9,'Feature Details','---'*10+'-','|')    
+    print('\n|','---'*9,'Feature Details','---'*10+'-','|')
 
     negative = dataframe[dataframe[target_feature] == 0][column_name]
     positive = dataframe[dataframe[target_feature] == 1][column_name]
 
     ## Creating dataframe for .describe() results
-    temp_pos = pd.DataFrame(positive.describe(datetime_is_numeric=True))
     temp_neg = pd.DataFrame(negative.describe(datetime_is_numeric=True))
-
+    temp_pos = pd.DataFrame(positive.describe(datetime_is_numeric=True))
+    
     ## Format floats to 2 decimal points
     if (dataframe[column_name].dtype == 'int64') or (dataframe[column_name].dtype == 'float64'):
-        temp_pos = round(temp_pos, 2)
         temp_neg = round(temp_neg, 2)
+        temp_pos = round(temp_pos, 2)
+    else:
+        pass
 
     ## Creating placeholder row for dataframe legibility
-    temp_pos = temp_pos.T
     temp_neg = temp_neg.T
-
-    temp_pos.insert(len(temp_pos.columns),' ',' ')
+    temp_pos = temp_pos.T
+    
     temp_neg.insert(len(temp_neg.columns),' ',' ')
+    temp_pos.insert(len(temp_pos.columns),' ',' ')
 
-    temp_pos = temp_pos.T
     temp_neg = temp_neg.T
+    temp_pos = temp_pos.T
     
     ## Concat temp dataframes into one main w/ multi-index
     comb_desc = pd.DataFrame(pd.concat([temp_pos, temp_neg], keys = ['Check-Out', 'Canceled']))
@@ -384,7 +385,6 @@ def explore_feature(dataframe, column_name, show_visualization, target_feature= 
         
     ## Concat temp dataframes into one main w/ multi-index
     value_counts = pd.DataFrame(pd.concat([vc_co,vc_cxl], keys = ['Check-Out', 'Canceled']))
-
 
     ## Creating dataframe for .dtypes results
     dt_cxl = pd.DataFrame(positive.dtypes, index=[' '], columns=[column_name])
@@ -421,10 +421,10 @@ def explore_feature(dataframe, column_name, show_visualization, target_feature= 
             'selector': 'tb', 'props': [('font-size', '110%'), ('text-align', 'right')]}]
 
     display(df.style.set_table_styles(css + css1 + css2))
-
-    print('\n\n|','---'*9,'Visualizing Results','---'*9,'|')
-
+    
     if show_visualization == True:
+    
+        print('\n\n|','---'*9,'Visualizing Results','---'*9,'|')
 
         if plot_type == 'histogram':
             fig = px.histogram(dataframe,column_name,
@@ -444,105 +444,105 @@ def explore_feature(dataframe, column_name, show_visualization, target_feature= 
             fig.update_layout(bargap=0.2)
         
         fig.show()
+    else:
+        pass
 
-        fig.data = []
-        # fig.layout = {}
-
-    return df
+    return None
 
 
-def test_explore_feature(dataframe, column_name, normalize = True, width = 800, height=600, target_feature= None, bins=None, plot_type = None,
-                    marginal=None, plot_label = None, plot_title=None):
-    """Used for testing and development.
+## Function used for testing purposes
+# def test_explore_feature(dataframe, column_name, normalize = True, width = 800, height=600, target_feature= None, bins=None, plot_type = None,
+#                     marginal=None, plot_label = None, plot_title=None):
+#     """Used for testing and development.
     
-    ---
+#     ---
 
-    DataFrame styling code adapted from:
+#     DataFrame styling code adapted from:
     
-    https://stackoverflow.com/questions/59769161/python-color-pandas-dataframe-based-on-multiindex#:~:text=2-,You,-can%20use%20Styler.
-    """
+#     https://stackoverflow.com/questions/59769161/python-color-pandas-dataframe-based-on-multiindex#:~:text=2-,You,-can%20use%20Styler.
+#     """
 
 
-    print('\n|','---'*9,'Feature Details','---'*10+'-','|\n')    
+#     print('\n|','---'*9,'Feature Details','---'*10+'-','|\n')    
 
-    negative = dataframe[dataframe[target_feature] == 0][column_name]
-    positive = dataframe[dataframe[target_feature] == 1][column_name]
+#     negative = dataframe[dataframe[target_feature] == 0][column_name]
+#     positive = dataframe[dataframe[target_feature] == 1][column_name]
 
-    ## Creating dataframe for .describe() results
-    comb_desc = pd.DataFrame(pd.concat([negative.describe(), positive.describe()], keys = ['Check-Out', 'Canceled']))
+#     ## Creating dataframe for .describe() results
+#     comb_desc = pd.DataFrame(pd.concat([negative.describe(), positive.describe()], keys = ['Check-Out', 'Canceled']))
     
-    if dataframe[column_name].dtype != 'O':
-        comb_desc = comb_desc.applymap("{0:.2f}".format)
+#     if dataframe[column_name].dtype != 'O':
+#         comb_desc = comb_desc.applymap("{0:.2f}".format)
 
-    ## Creating dataframe for .value_counts() results
-    vc_cxl = positive.value_counts(dropna=False, normalize=normalize, bins=bins, sort=False).sort_index()
-    vc_co = negative.value_counts(dropna=False, normalize=normalize, bins=bins, sort=False).sort_index()
-    value_counts = pd.DataFrame(pd.concat([vc_co,vc_cxl], keys = ['Check-Out', 'Canceled'])).applymap("{0:.2f}".format)
-    # value_counts = value_counts.applymap("{0:.2f}".format)
+#     ## Creating dataframe for .value_counts() results
+#     vc_cxl = positive.value_counts(dropna=False, normalize=normalize, bins=bins, sort=False).sort_index()
+#     vc_co = negative.value_counts(dropna=False, normalize=normalize, bins=bins, sort=False).sort_index()
+#     value_counts = pd.DataFrame(pd.concat([vc_co,vc_cxl], keys = ['Check-Out', 'Canceled'])).applymap("{0:.2f}".format)
+#     # value_counts = value_counts.applymap("{0:.2f}".format)
     
-    ## Creating dataframe for .dtypes results
-    dt_cxl = pd.DataFrame(positive.dtypes, index=[' '], columns=[column_name])
-    dt_co = pd.DataFrame(negative.dtypes, index=[' '], columns=[column_name])
-    dtypes = pd.concat([dt_co,dt_cxl], keys = [' '])
+#     ## Creating dataframe for .dtypes results
+#     dt_cxl = pd.DataFrame(positive.dtypes, index=[' '], columns=[column_name])
+#     dt_co = pd.DataFrame(negative.dtypes, index=[' '], columns=[column_name])
+#     dtypes = pd.concat([dt_co,dt_cxl], keys = [' '])
 
-    df = pd.concat([comb_desc, value_counts, dtypes], axis=0, keys=['Statistics', 'Value Counts', 'Datatype'])
+#     df = pd.concat([comb_desc, value_counts, dtypes], axis=0, keys=['Statistics', 'Value Counts', 'Datatype'])
 
-    ## Setting RGBA values for blue, orange
-    colors = {'Statistics': (76, 120, 168, 1), 'Value Counts': (245, 133, 24, 1), 'Datatype': (66, 153, 80, 1)}
+#     ## Setting RGBA values for blue, orange
+#     colors = {'Statistics': (76, 120, 168, 1), 'Value Counts': (245, 133, 24, 1), 'Datatype': (66, 153, 80, 1)}
 
-    ## Setting full/quarter alpha levels for colors 
-    c1 = {k: (r,g,b, .35) for k, (r,g,b,a) in colors.items()}
-    c2 = {k: (r,g,b, .2) for k, (r,g,b,a) in colors.items()}
-    c3 = {k: (r,g,b, .05) for k, (r,g,b,a) in colors.items()}
+#     ## Setting full/quarter alpha levels for colors 
+#     c1 = {k: (r,g,b, .35) for k, (r,g,b,a) in colors.items()}
+#     c2 = {k: (r,g,b, .2) for k, (r,g,b,a) in colors.items()}
+#     c3 = {k: (r,g,b, .05) for k, (r,g,b,a) in colors.items()}
 
 
-    ## Get values of first level of multi-index
-    idx = df.index.get_level_values(0)
-    # idx2 = df.index.get_level_values(1)
+#     ## Get values of first level of multi-index
+#     idx = df.index.get_level_values(0)
+#     # idx2 = df.index.get_level_values(1)
 
-    ## Set CSS for first level
-    css = [{'selector': f'.row{i}.level0', 
-            'props': [('background-color', f'rgba{c1[j]}')]} for i,j in enumerate(idx)]
+#     ## Set CSS for first level
+#     css = [{'selector': f'.row{i}.level0', 
+#             'props': [('background-color', f'rgba{c1[j]}')]} for i,j in enumerate(idx)]
 
-    ## Counter per first level for pair and unpair coloring
-    zipped = zip(df.groupby(idx).cumcount()+2, enumerate(idx))
-    # zipped2 = zip(df.groupby(idx2).cumcount(), enumerate(idx2))
+#     ## Counter per first level for pair and unpair coloring
+#     zipped = zip(df.groupby(idx).cumcount()+2, enumerate(idx))
+#     # zipped2 = zip(df.groupby(idx2).cumcount(), enumerate(idx2))
 
-    # Setting alternating color scheme for rows
-    css1 = [{'selector': f'.row{i}', 'props': [('background-color', f'rgba{c1[j]}')]} 
-        if v % 2 == 0 
-        else {'selector': f'.row{i}', 'props': [('background-color', f'rgba{c2[j]}')]} 
-        for v,(i, j) in zipped]
+#     # Setting alternating color scheme for rows
+#     css1 = [{'selector': f'.row{i}', 'props': [('background-color', f'rgba{c1[j]}')]} 
+#         if v % 2 == 0 
+#         else {'selector': f'.row{i}', 'props': [('background-color', f'rgba{c2[j]}')]} 
+#         for v,(i, j) in zipped]
 
-    css3 = [{'selector': f'.row{i}.level2', 'props': [('background-color', f'rgba{c2[j]}')]} 
-        if v % 2 == 0 
-        else {'selector': f'.row{i}.level2', 'props': [('background-color', f'rgba{c3[j]}')]} 
-        for v,(i, j) in zipped]
+#     css3 = [{'selector': f'.row{i}.level2', 'props': [('background-color', f'rgba{c2[j]}')]} 
+#         if v % 2 == 0 
+#         else {'selector': f'.row{i}.level2', 'props': [('background-color', f'rgba{c3[j]}')]} 
+#         for v,(i, j) in zipped]
 
-    css2 = [{'selector': 'th', 'props': [('font-size', '115%'), ('text-align', 'left')],
-            'selector': 'tb', 'props': [('font-size', '110%'), ('text-align', 'right')]}]
+#     css2 = [{'selector': 'th', 'props': [('font-size', '115%'), ('text-align', 'left')],
+#             'selector': 'tb', 'props': [('font-size', '110%'), ('text-align', 'right')]}]
 
-    display(df.style.set_table_styles(css + css1 + css2))# + css3))
+#     display(df.style.set_table_styles(css + css1 + css2))# + css3))
 
-    print('\n\n|','---'*9,'Visualizing Results','---'*9,'|')
+#     print('\n\n|','---'*9,'Visualizing Results','---'*9,'|')
 
-    if plot_type == 'histogram':
-        fig = px.histogram(dataframe,column_name,
-                   color=target_feature,
-                   marginal = marginal,
-                   labels={column_name: plot_label}, 
-                   title=plot_title,
-                   width = width, height=height)
-        fig.update_layout(bargap=0.2)
+#     if plot_type == 'histogram':
+#         fig = px.histogram(dataframe,column_name,
+#                    color=target_feature,
+#                    marginal = marginal,
+#                    labels={column_name: plot_label}, 
+#                    title=plot_title,
+#                    width = width, height=height)
+#         fig.update_layout(bargap=0.2)
 
-    if plot_type == 'box':
-        fig = px.box(dataframe,column_name,
-                    color=target_feature,
-                    labels={column_name: plot_label},
-                    title=plot_title,
-                    width = width, height=height)
-        fig.update_layout(bargap=0.2)
+#     if plot_type == 'box':
+#         fig = px.box(dataframe,column_name,
+#                     color=target_feature,
+#                     labels={column_name: plot_label},
+#                     title=plot_title,
+#                     width = width, height=height)
+#         fig.update_layout(bargap=0.2)
     
-    fig.show()
+#     fig.show()
 
-    return df
+#     return df

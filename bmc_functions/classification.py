@@ -11,11 +11,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 from sklearn import metrics
-from sklearn.metrics._plot.precision_recall_curve import PrecisionRecallDisplay
 
 
 ## Generating scores for later comparisons
-
 def model_scores(model, X_train, y_train, X_test, y_test):
     """[summary]
 
