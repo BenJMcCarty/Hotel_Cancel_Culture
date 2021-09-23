@@ -109,12 +109,16 @@ def ts_split(dataframe, threshold=.85, show_vis=False, figsize=(10,5)):
     """Creates train/test split for time series modeling.
 
     Args:
-        timeseries_df (DataFrame): DataFrame or Series to be modeled
-        threshold (float): Threshold (as decimal percent) for splitting data. Defaults to .85.
-        show_vis (boolean): Whether to show a visualization of the split data. Detaults to False.
+        dataframe (DataFrame): DataFrame or Series to be modeled
+        threshold (float, optional): Cutoff for splitting data. Defaults to .85.
+        show_vis (bool, optional): Whether to show a visualization of the split data. Defaults to False.
+        figsize (tuple, optional): Figsize for Matplotlib. Defaults to (10,5).
 
     Returns:
-        train, test: Initial DataFrame/Series split into sub-Series for modeling
+        dict: Dictionary containing:
+                * train: training series
+                * test: test series
+                * split_vis: visualization of split data
     """
 
     split_dict = {}
@@ -142,12 +146,10 @@ def ts_split(dataframe, threshold=.85, show_vis=False, figsize=(10,5)):
 
     plt.close(fig)
 
-    del tts_cutoff, train, test, fig, ax
-
     return split_dict
 
 ## Display model results
-def model_performance(ts_model, show_vis = False):
+def model_performance(ts_model, show_vis = False, figsize = (12, 6)):
     """Displays a fitted model's summary and plot diagnostics.
 
     Args:
@@ -157,7 +159,7 @@ def model_performance(ts_model, show_vis = False):
 
     perf['summary'] = ts_model.summary()
 
-    perf['vis'] = ts_model.plot_diagnostics(figsize = (12, 6))
+    perf['vis'] = ts_model.plot_diagnostics(figsize = figsize)
 
     if show_vis == True:
         plt.show(perf['vis'])
@@ -206,7 +208,7 @@ def auto_arima_model(timeseries_dataset, m = 12, start_p=0,max_p=5,
 ## Then create new SARIMA model via Statsmodels with selected parameters
 def create_best_model(timeseries_dataset,m=12,start_p=0,max_p=5,
                         start_q=0,max_q=5,start_P=0,
-                        start_Q=0, max_P=5, max_Q = 5, show_vis=False, figsize=(10,5)):
+                        start_Q=0, max_P=5, max_Q = 5, show_vis=True, figsize=(10,5)):
 
     """Calculates best model parameters via auto-arima,
      then fits a new SARIMAX model for results.
@@ -298,10 +300,10 @@ def plot_forecast_ttf(split_dict, forecast_df, figsize = (10,5), show_vis = Fals
     return ttf_dict
 
 ## Plotting training, testing datasets
-def plot_forecast_final(zipcode_val, forecast_full, figsize = (10,5), show_vis = False):
+def plot_forecast_final(zipcode_val, forecast_full, figsize = (10,5), show_vis = True):
     ## Plotting original data and forecasted results
     
-    fig,ax=plt.subplots()
+    fig,ax=plt.subplots(figsize = figsize)
 
     ## Plotting original data
     zipcode_val.plot(ax=ax, label='Original Data')
@@ -331,7 +333,7 @@ def plot_forecast_final(zipcode_val, forecast_full, figsize = (10,5), show_vis =
 
 ### --------------- Workflow --------------- ###
 
-def ts_modeling_workflow(dataframe, zipcode, threshold = .85, m= 12,figsize = (10,5), show_vis = False):
+def ts_modeling_workflow(dataframe, column_name=None, threshold = .85, m= 12,figsize = (10,5), show_vis = True):
     """Functionalizes total time series modeling workflow 
     starting with time series dataset through final forecasted data and ROI.
 
@@ -347,8 +349,12 @@ def ts_modeling_workflow(dataframe, zipcode, threshold = .85, m= 12,figsize = (1
     metrics = {}
     forecast_vis = {}
 
+
     ## Select values for the selected zipcode
-    zipcode_val = dataframe[zipcode].copy()
+    if type(dataframe) == pd.core.frame.DataFrame:
+        zipcode_val = dataframe[column_name].copy()
+    elif type(dataframe) ==  pd.core.series.Series:
+        zipcode_val = dataframe
 
     ## Split dataset
 
@@ -366,7 +372,7 @@ def ts_modeling_workflow(dataframe, zipcode, threshold = .85, m= 12,figsize = (1
 
     ## Generating auto_arima model and SARIMAX model
     ## (based on best parameters from auto_arima model)
-    auto_model_train, best_model_train = create_best_model(timeseries_dataset = train, m=m)
+    auto_model_train, best_model_train = create_best_model(timeseries_dataset = train, m=m, show_vis=show_vis)
     
     ## Saving training model results
     metrics['train'] = model_performance(best_model_train)
@@ -384,7 +390,7 @@ def ts_modeling_workflow(dataframe, zipcode, threshold = .85, m= 12,figsize = (1
     forecast_train = forecast_and_ci(best_model_train, test)
 
     ## Plotting forecast results against train/test split
-    forecast_vis['train'] = plot_forecast_ttf(split_dict, forecast_df = forecast_train, figsize=figsize)
+    forecast_vis['train'] = plot_forecast_ttf(split_dict, forecast_df = forecast_train, figsize=figsize, show_vis= show_vis)
 
     vis = forecast_vis.get('train').get('vis')
 
@@ -399,7 +405,7 @@ def ts_modeling_workflow(dataframe, zipcode, threshold = .85, m= 12,figsize = (1
                             seasonal_order = auto_model_train.seasonal_order,
                             enforce_invertibility=False).fit()
 
-    metrics['full'] = model_performance(best_model_full)
+    metrics['full'] = model_performance(best_model_full, show_vis = show_vis)
     
 
     vis = metrics.get('vis')
@@ -416,7 +422,7 @@ def ts_modeling_workflow(dataframe, zipcode, threshold = .85, m= 12,figsize = (1
     tsa_results['forecasted_prices'] = best_forecast
 
     ## Plotting original data and forecast results
-    forecast_vis['full'] = plot_forecast_final(zipcode_val, tsa_results['forecasted_prices'], figsize=figsize)
+    forecast_vis['full'] = plot_forecast_final(zipcode_val, tsa_results['forecasted_prices'], figsize=figsize, show_vis= show_vis)
     
     plt.show(forecast_vis['full'])
 
