@@ -127,10 +127,14 @@ def train_test_split(data, split_point, xlabel, ylabel, title,
     split_dict = {}
 
     ## Split the data based on datatype (numeric vs. string)
-    if type(split_point) != str:
+    if type(split_point) == float:
         tts_cutoff = round(data.shape[0]*split_point)
         train = data.iloc[:tts_cutoff]
         test = data.iloc[tts_cutoff:]
+
+    elif split_point == int:
+        train = data.iloc[:split_point]
+        test = data.iloc[split_point:]
 
     else:
         train = data.iloc[:split_point]
@@ -143,7 +147,7 @@ def train_test_split(data, split_point, xlabel, ylabel, title,
     test.plot(ax=ax, label='Testing Data')
     ax.set(xlabel = xlabel, ylabel = ylabel, title = f'{title} {data.name}: Train/Test Split')
     ax.axvline(train.index[-1], linestyle=':', c='k',
-               label=f'Split Date: {train.index[-1].year} - {train.index[-1].month}')
+               label=f'Split Date: {train.index[-1].year}/{train.index[-1].month}/{train.index[-1].day}')
     ax.legend()
 
     if show_vis is True:
@@ -235,7 +239,7 @@ def create_best_model(timeseries_dataset, m,
     best_model = tsa.SARIMAX(timeseries_dataset,order=auto_model_best.order,
                              seasonal_order = auto_model_best.seasonal_order,
                              enforce_invertibility=False).fit()
-    
+        
     if show_vis is True:
         display(auto_model_best.summary())
         display(model_performance(best_model, show_vis=True, figsize=figsize))
@@ -268,7 +272,7 @@ def model_performance(ts_model, show_vis = False, figsize = (12, 6)):
 
 
 ## Using get_forecast to generate forecasted data
-def forecast_and_ci(model, test_data):
+def forecast_and_ci(model, test_data, alpha=0.05):
     """Generates forecasted data and the upper/lower confidence intervals for forecast.
 
     Args:
@@ -280,7 +284,7 @@ def forecast_and_ci(model, test_data):
     """
 
     forecast = model.get_forecast(steps=len(test_data))
-    forecast_df = forecast.conf_int()
+    forecast_df = forecast.conf_int(alpha=alpha)
     forecast_df.columns = ['Lower CI','Upper CI']
     forecast_df['Forecast'] = forecast.predicted_mean
 
@@ -375,7 +379,7 @@ def plot_forecast_final(data, forecast_df, xlabel, ylabel, title, figsize = (10,
 
 ### --------------- Workflow --------------- ###
 
-def ts_modeling_workflow(data, threshold, m, xlabel, ylabel, title, figsize = (10,5), show_vis = True):
+def ts_modeling_workflow(data, threshold, m, xlabel, ylabel, title, figsize = (10,5), alpha=0.05, show_vis = True):
 
     tsa_results = {}
     metrics = {}
@@ -406,7 +410,7 @@ def ts_modeling_workflow(data, threshold, m, xlabel, ylabel, title, figsize = (1
     plt.close()
 
     ## Generating dataframe to store forecast results
-    forecast_train = forecast_and_ci(best_model_train, test)
+    forecast_train = forecast_and_ci(best_model_train, test, alpha=alpha)
 
     ## Plotting forecast results against train/test split
     forecast_vis['train'] = plot_forecast_ttf(split_dict, forecast_df = forecast_train,
@@ -433,7 +437,7 @@ def ts_modeling_workflow(data, threshold, m, xlabel, ylabel, title, figsize = (1
     plt.close(vis)
 
     ## Generating forecast
-    best_forecast = forecast_and_ci(best_model_full, test)
+    best_forecast = forecast_and_ci(best_model_full, test, alpha=alpha)
 
     tsa_results['forecasted_data'] = best_forecast
 
@@ -448,7 +452,8 @@ def ts_modeling_workflow(data, threshold, m, xlabel, ylabel, title, figsize = (1
     # investment_cost = tsa_results['forecasted_prices'].iloc[0,2]
     # tsa_results['roi'] = (tsa_results['forecasted_prices'] - investment_cost)/investment_cost*100
     
-    tsa_results['num_yrs_forecast'] = len(split_dict['test'])
+    tsa_results['model'] = best_model_full
+    tsa_results['forecast_length'] = len(split_dict['test'])
     tsa_results['model_metrics'] = metrics
     tsa_results['model_visuals'] = forecast_vis
     
