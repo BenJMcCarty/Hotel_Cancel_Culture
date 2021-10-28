@@ -4,6 +4,8 @@ Description: Functions created to assist with data cleaning and exploratory data
 
 By Ben McCarty (bmccarty505@gmail.com)'''
 
+from IPython.display import display
+
 import numpy as np
 import pandas as pd
 import scipy.stats as stats
@@ -356,7 +358,7 @@ def explore_feature(dataframe, column_name, show_visualization = False, target_f
     temp_pos = temp_pos.T
     
     ## Concat temp dataframes into one main w/ multi-index
-    comb_desc = pd.DataFrame(pd.concat([temp_negtemp_pos], keys = ['Check-Out', 'Canceled']))
+    comb_desc = pd.DataFrame(pd.concat([temp_neg, temp_pos], keys = ['Check-Out', 'Canceled']))
 
     ## Creating dataframe for .value_counts() results
     if bins == None:
