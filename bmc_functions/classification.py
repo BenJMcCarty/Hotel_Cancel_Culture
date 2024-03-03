@@ -193,7 +193,8 @@ def cf_rpt_results(y_true, y_preds, metric):
                                                    output_dict=True))
 
     ## Rounding all values to 2 decimals
-    cr_df = cr_df.applymap(lambda x: round(x, 2))
+    # cr_df = cr_df.apply(lambda x: round(x, 2))
+    cr_df = cr_df.round(2)
 
     ## adding blank col b/t 1, "accuracy"
     cr_df.insert(2,column=" ", value=" ")
@@ -258,7 +259,7 @@ def evaluate_classification(model,X_train, y_train, X_test, y_test,
         [type]: [description]
     """                    
 
-    print('\n|' + '----'*8 + ' Classification Metrics ' + '---'*11 + '--|\n')
+    print('\n|' + ' Classification Metrics '.center(75, '-') + '|\n')
 
     y_hat_train = model.predict(X_train)
     y_hat_test = model.predict(X_test)
@@ -304,35 +305,45 @@ def evaluate_classification(model,X_train, y_train, X_test, y_test,
 
     ### --- Clasification Reports --- ###
     
-    print('\n\n|' + '----'*7 + ' Classification Report - Testing Data ' + '---'*8 + '-|\n')
+    print('\n', ' Classification Results: Testing Data '.center(75, '-'),'\n')
     print(metrics.classification_report(y_test, y_hat_test,
                                     target_names=labels))
 
     fig, ax = plt.subplots(ncols=2, figsize = figsize)
-    metrics.plot_confusion_matrix(model, X_test,y_test,cmap=cmap,
-                            normalize=normalize, display_labels=labels,
-                            ax=ax[0])
+    
+    # ## Deprecated due to Scikit-Learn package updates
+    # metrics.plot_confusion_matrix(model, X_test,y_test,cmap=cmap,
+    #                         normalize=normalize, display_labels=labels,
+    #                         ax=ax[0])
+    
+    cm = metrics.confusion_matrix(y_test, y_hat_test, normalize = normalize)
+    cm_display = metrics.ConfusionMatrixDisplay(cm)
+    cm_display.from_predictions(y_test, y_hat_test, normalize = normalize, cmap = cmap, display_labels=labels, ax = ax[0])
 
-    curve = metrics.plot_roc_curve(model, X_test,y_test,ax=ax[1])
-    curve.ax_.grid()
-    curve.ax_.plot([0,1],[0,1], ls=':')
+    # curve = metrics.plot_roc_curve(model, X_test, y_test, ax=ax[1])
+    # curve.ax_.grid()
+    # curve.ax_.plot([0,1],[0,1], ls=':')
     plt.tight_layout()
     plt.show()
     plt.close()
 
     if train_clf_rpt == True:
-        print('\n|' + '----'*7 + ' Classification Report - Training Data ' + '---'*8 + '|\n')
+        print('\n', ' Classification Results: Training Data '.center(75, '-'),'\n')
         print(metrics.classification_report(y_train, y_hat_train,
                                     target_names=labels))
 
-        fig, ax = plt.subplots(ncols=2, figsize = figsize)
-        metrics.plot_confusion_matrix(model, X_train,y_train,cmap=cmap,
-                                normalize=normalize, display_labels=labels,
-                                ax=ax[0])
+        # fig, ax = plt.subplots(ncols=2, figsize = figsize)
+        # metrics.plot_confusion_matrix(model, X_train,y_train,cmap=cmap,
+        #                         normalize=normalize, display_labels=labels,
+        #                         ax=ax[0])
+        
+        cm = metrics.confusion_matrix(y_train, y_hat_train, normalize = normalize)
+        cm_display = metrics.ConfusionMatrixDisplay(cm)
+        cm_display.from_predictions(y_train, y_hat_train, normalize = normalize, cmap = cmap, display_labels=labels, ax = ax[0])
 
-        curve = metrics.plot_roc_curve(model, X_train,y_train,ax=ax[1])
-        curve.ax_.grid()
-        curve.ax_.plot([0,1],[0,1], ls=':')
+        # curve = metrics.plot_roc_curve(model, X_train,y_train,ax=ax[1])
+        # curve.ax_.grid()
+        # curve.ax_.plot([0,1],[0,1], ls=':')
         plt.tight_layout()
         plt.show()
         plt.close()
