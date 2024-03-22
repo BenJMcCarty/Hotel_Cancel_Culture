@@ -301,8 +301,8 @@ def plot_boxes(data, x_label, y_label, suptitle, figsize=(13,8)):
 
     return
 
-def explore_feature(dataframe, column_name, show_visualization = False, target_feature= 'is_canceled',
-                    plot_type = 'histogram', normalize = True,sort_val = True, 
+def explore_feature(dataframe, column_name, target_feature, show_visualization = False,
+                    plot_type = 'histogram', normalize = True, sort_val = True, 
                     width = 800, height=600, bins=None, marginal=None, plot_label = None, plot_title=None):
     """Generates a dataframe summarizing .describe(), .value_counts(), and .dtypes for a given feature from a dataframe.
 
@@ -337,8 +337,8 @@ def explore_feature(dataframe, column_name, show_visualization = False, target_f
     positive = dataframe[dataframe[target_feature] == 1][column_name]
 
     ## Creating dataframe for .describe() results
-    temp_neg = pd.DataFrame(negative.describe(datetime_is_numeric=True))
-    temp_pos = pd.DataFrame(positive.describe(datetime_is_numeric=True))
+    temp_neg = pd.DataFrame(negative.describe())
+    temp_pos = pd.DataFrame(positive.describe())
     
     ## Format floats to 2 decimal points
     if (dataframe[column_name].dtype == 'int64') or (dataframe[column_name].dtype == 'float64'):
@@ -366,8 +366,8 @@ def explore_feature(dataframe, column_name, show_visualization = False, target_f
         vc_co = pd.DataFrame(negative.value_counts(dropna=False, normalize=normalize, sort=sort_val).sort_index())
 
         if normalize == True:
-            vc_cxl = vc_cxl.applymap("{0:.2%}".format)
-            vc_co = vc_co.applymap("{0:.2%}".format)
+            vc_cxl = vc_cxl.map("{0:.2%}".format)
+            vc_co = vc_co.map("{0:.2%}".format)
         else:
             pass
 
@@ -382,8 +382,8 @@ def explore_feature(dataframe, column_name, show_visualization = False, target_f
         vc_co = vc_co.T
 
     else:
-        vc_cxl = pd.DataFrame(positive.value_counts(dropna=False, normalize=normalize, bins=bins, sort=sort_val).sort_index()).applymap("{0:.2%}".format)   
-        vc_co = pd.DataFrame(negative.value_counts(dropna=False, normalize=normalize, bins=bins, sort=sort_val).sort_index()).applymap("{0:.2%}".format)
+        vc_cxl = pd.DataFrame(positive.value_counts(dropna=False, normalize=normalize, bins=bins, sort=sort_val).sort_index()).map("{0:.2%}".format)   
+        vc_co = pd.DataFrame(negative.value_counts(dropna=False, normalize=normalize, bins=bins, sort=sort_val).sort_index()).map("{0:.2%}".format)
         
     ## Concat temp dataframes into one main w/ multi-index
     value_counts = pd.DataFrame(pd.concat([vc_co,vc_cxl], keys = ['Check-Out', 'Canceled']))
@@ -474,13 +474,13 @@ def explore_feature(dataframe, column_name, show_visualization = False, target_f
 #     comb_desc = pd.DataFrame(pd.concat([negative.describe(), positive.describe()], keys = ['Check-Out', 'Canceled']))
     
 #     if dataframe[column_name].dtype != 'O':
-#         comb_desc = comb_desc.applymap("{0:.2f}".format)
+#         comb_desc = comb_desc.map("{0:.2f}".format)
 
 #     ## Creating dataframe for .value_counts() results
 #     vc_cxl = positive.value_counts(dropna=False, normalize=normalize, bins=bins, sort=False).sort_index()
 #     vc_co = negative.value_counts(dropna=False, normalize=normalize, bins=bins, sort=False).sort_index()
-#     value_counts = pd.DataFrame(pd.concat([vc_co,vc_cxl], keys = ['Check-Out', 'Canceled'])).applymap("{0:.2f}".format)
-#     # value_counts = value_counts.applymap("{0:.2f}".format)
+#     value_counts = pd.DataFrame(pd.concat([vc_co,vc_cxl], keys = ['Check-Out', 'Canceled'])).map("{0:.2f}".format)
+#     # value_counts = value_counts.map("{0:.2f}".format)
     
 #     ## Creating dataframe for .dtypes results
 #     dt_cxl = pd.DataFrame(positive.dtypes, index=[' '], columns=[column_name])
