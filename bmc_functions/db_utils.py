@@ -6,6 +6,7 @@ import os
 import pandas as pd
 import uuid
 
+# --- FUNCTIONS FOR PREPARING DATABASE --- #
 
 def generate_uuid_list(df):
     """
@@ -70,7 +71,7 @@ def add_hotel_number_to_dataframe(input_filepath, output_filepath=None,
     
     return df
 
-
+# --- FUNCTIONS FOR INTERACTING WITH DATABASE --- #
 
 @contextmanager
 def duckdb_connection(database_path):
@@ -101,4 +102,11 @@ def duckdb_connection(database_path):
         yield conn
     finally:
         conn.close()
+
+
+def alter_table(command, db_path):
+    
+    with duckdb_connection(db_path) as conn:
+        conn.execute(command)
+        print('Completed successfully.')
 
