@@ -110,3 +110,16 @@ def alter_table(command, db_path):
         conn.execute(command)
         print('Completed successfully.')
 
+
+def get_col_dtypes(table_name, db_path):
+    
+
+    with duckdb_connection(db_path) as conn:
+        column_info = conn.execute(f"PRAGMA table_info({table_name})").fetchall()
+
+    # Print information about each column
+    for column in column_info:
+        column_name, column_dtype = column[1], column[2]
+        print(f"Column Name: {column_name}, Data Type: {column_dtype}")
+        
+    return column_info
