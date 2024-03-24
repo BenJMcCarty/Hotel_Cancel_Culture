@@ -10,3 +10,4 @@ from bmc_functions import regression
 from bmc_functions import time_series_modeling
 from bmc_functions import time_series_modeling_old
 from bmc_functions import data_preprocessing
+from bmc_functions import db_utils
