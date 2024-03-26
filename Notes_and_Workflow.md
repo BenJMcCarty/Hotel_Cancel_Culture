@@ -1,10 +1,25 @@
-# Ideas:
+# Data Handling and ETL Process
 
-* Feature Selection
-    * Identify features unlikely to be known before/at booking/arrival
-        * *Which features would I know during a revenue management call?*
-    * Create subset of "guaranteed" features
+**Current:** Mix of database (for initial data); parquet; and other filetypes. Nested folders creating complex filepaths. Too many different versions of the same data.
 
+**MVP Solution:**
+* Use only parquet files
+* Focus on `ArrivalDate` for Datetime index (DTI)
+    * `BookingDate` will be AAB
+* Ensure all notebooks are fully functional
+
+**AAB Goals:**
+* Copy workflow for `BookingDate` as DTI.
+* Proper database setup and maintenance.
+* Normalization of database tables.
+* Rework workflow to leverage database strengths and functionality.
+* Restructure full repository for clarity and organization.
+
+# Feature Selection - Known in Advance
+
+Identify and subset features most likely to be known before/at booking/arrival.
+
+Ask the question, *Which features would I know during a revenue management call?*
 
 # Auxillary Models
 
@@ -71,35 +86,35 @@ df['distance_to_centroid'] = distances
 
 Adding clustering-based features can introduce a rich layer of information to your models, potentially capturing complex patterns that were not utilized previously. However, it's also essential to monitor for overfitting and ensure the clustering process itself is robust and meaningful.
 
-## KMeans Clustering - Numeric 
+### KMeans Clustering - Numeric 
 
 Focusing solely on the numeric features simplifies the choice of clustering algorithms for your dataset of 120,000 rows, as you no longer need to consider the complexity of handling mixed data types. This allows you to leverage the strengths of algorithms that are well-suited to large, numeric datasets. Here are the most suitable options:
 
-### 1. **K-Means**
+#### 1. **K-Means**
 
 - **Scalability:** Excellent. K-Means is efficient for large datasets, particularly with the Mini-Batch K-Means variant, which is designed to be more scalable by processing subsets of the data in each iteration.
   
 - **Implementation:** Use `MiniBatchKMeans` from Scikit-learn for a more scalable version of K-Means. Remember to standardize your numeric features since K-Means is sensitive to the scale of the data.
 
-### 2. **DBSCAN**
+#### 2. **DBSCAN**
 
 - **Scalability:** Good with optimizations. DBSCAN can handle large datasets, but its performance might degrade as the size increases. Its complexity is primarily based on the number of rows and the efficiency of the nearest neighbor search.
   
 - **Implementation:** Consider using optimized libraries like HDBSCAN (an extension of DBSCAN available in a separate Python package) that can handle larger datasets more efficiently and offers automatic parameter tuning.
 
-### 3. **Hierarchical Clustering**
+#### 3. **Hierarchical Clustering**
 
 - **Scalability:** Poor. Hierarchical clustering is computationally intensive for large datasets due to its \(O(n^2)\) complexity in both time and space, making it less suitable for 120,000 rows.
 
-### 4. **Mean Shift**
+#### 4. **Mean Shift**
 
 - **Scalability:** Poor. Like hierarchical clustering, mean shift is not typically recommended for large datasets due to its high computational cost.
 
-### 5. **Spectral Clustering**
+#### 5. **Spectral Clustering**
 
 - **Scalability:** Poor for large datasets. Spectral clustering involves eigenvalue decomposition of the similarity matrix, which becomes computationally expensive as the dataset grows.
 
-### Scalable Clustering Recommendations:
+#### Scalable Clustering Recommendations:
 
 Given the focus on numeric features and considering the dataset's size:
 
@@ -107,7 +122,7 @@ Given the focus on numeric features and considering the dataset's size:
   
 - **DBSCAN or HDBSCAN** might be suitable if your data includes noise or if you're looking for clusters with arbitrary shapes. HDBSCAN, in particular, offers advantages in handling variable density clusters and automatically determining the number of clusters, which can be beneficial for exploratory data analysis.
 
-### Steps for Mini-Batch K-Means:
+#### Steps for Mini-Batch K-Means:
 
 ```python
 from sklearn.cluster import MiniBatchKMeans
@@ -126,7 +141,7 @@ clusters = mini_batch_kmeans.fit_predict(df_scaled)
 df_numeric['cluster'] = clusters
 ```
 
-### Conclusion:
+#### Conclusion:
 
 Focusing on numeric features allows you to utilize scalable and efficient clustering algorithms like Mini-Batch K-Means and potentially DBSCAN or HDBSCAN, depending on your specific needs and the characteristics of your data. Always ensure proper preprocessing like feature scaling to improve clustering outcomes and validate the chosen number of clusters through silhouette scores or similar metrics when using methods like K-Means.
 
@@ -170,23 +185,28 @@ Using an Isolation Forest for anomaly detection can be applied in different ways
 
 By thoughtfully applying Isolation Forest to your data considering these aspects, you can enhance both the quality of your data for modeling and the insights you derive from your analysis.
 
+## Kalman Filter
+
+> See ChatGPT chat: https://chat.openai.com/share/6864f390-80fc-423d-91f6-88a9b8cd8f1e
+
+
 # Inclusion of Error and Predictive Metrics
 
 Incorporating error metrics or predictive metrics from auxiliary models as features in an advanced dataset is an unconventional approach, but it can provide unique insights in certain contexts. Whether or not to include these metrics depends on your specific problem, the nature of your data, and what you're trying to predict. Here are some considerations and potential scenarios where such an approach might make sense:
 
-### Potential Benefits
+## Potential Benefits
 
 1. **Error Patterns as Features:** Sometimes, the error patterns from auxiliary models might carry information about the data's structure or underlying phenomena that are not captured by other features. For instance, if certain instances consistently yield higher prediction errors, this might indicate a subgroup with distinct characteristics.
 
 2. **Model Confidence:** Predictive metrics from auxiliary models, such as probability estimates for classification tasks, can serve as a proxy for the model's confidence in its predictions. These metrics can provide additional context that could be useful for the main model.
 
-### How to Implement
+## How to Implement
 
 - **Generate Error Metrics:** After training your auxiliary models, calculate the error metrics (e.g., MSE, RMSE, MAE for regression tasks; log loss, or Brier score for classification) or predictive metrics (e.g., predicted probabilities) for each instance in your dataset.
   
 - **Incorporate as Features:** Add these metrics as new features to your dataset. This involves appending the error or confidence metrics from the auxiliary models to your feature set before training your main model.
 
-### Considerations
+## Considerations
 
 - **Risk of Overfitting:** Adding these metrics as features could increase the risk of overfitting, especially if the auxiliary models are highly overfitted to the training data. It’s crucial to apply regularization techniques and perform thorough cross-validation.
 
@@ -196,12 +216,12 @@ Incorporating error metrics or predictive metrics from auxiliary models as featu
 
 - **Model Complexity:** This approach adds complexity to your modeling process. The additional preprocessing steps, dependency management, and the need for careful validation can complicate model development and maintenance.
 
-### Example Use Cases
+## Example Use Cases
 
 - **Anomaly Detection:** If auxiliary models are used to detect anomalies, the error metrics might indicate instances that are difficult to model, potentially pointing to outliers or anomalies.
   
 - **Ensemble Techniques:** In ensemble methods, confidence scores from individual models are often used to weigh predictions. Similarly, incorporating predictive metrics from auxiliary models could be seen as a form of ensemble learning.
 
-### Final Thoughts
+## Final Thoughts
 
 While innovative, using error metrics or predictive metrics from auxiliary models as features in your dataset is a strategy that requires careful consideration and rigorous validation. It might offer benefits in specific scenarios, particularly when conventional features do not fully capture the complexity of the data or the task at hand. However, it's essential to weigh these benefits against the potential risks and complexities introduced.
