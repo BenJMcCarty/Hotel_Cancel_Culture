@@ -61,5 +61,5 @@ def create_and_save_arrival_date_dataset(df, hotel_number, path='./data',
                                          filename_prefix=filename_prefix)
 
 # Example usage:
-# df = pd.read_parquet('./data/H1.parquet')
+# df = pd.read_parquet('../data/H1.parquet')
 # create_and_save_arrival_date_dataset(df, hotel_number=1)

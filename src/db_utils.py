@@ -91,10 +91,10 @@ def duckdb_connection(database_path):
       commands within a 'with' block.
 
     Example:
-        with duckdb_connection('./data/my_database.duckdb') as conn:
+        with duckdb_connection('../data/my_database.duckdb') as conn:
             conn.execute("SELECT * FROM my_table")
 
-    Note: Replace './data/my_database.duckdb' with the path to your actual
+    Note: Replace '../data/my_database.duckdb' with the path to your actual
     DuckDB database file.
     """
     try:
