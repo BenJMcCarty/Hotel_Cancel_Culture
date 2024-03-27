@@ -1,0 +1,7 @@
+parent_dir: ./data/
+fpath_database: hotel_reservations.duckdb
+fpath_source_data_h1: H1.parquet
+fpath_source_data_h2: H2.parquet
+fpath_fe_dates: engineered_data_dates.parquet
+fpath_data_training: training_data.parquet
+fpath_data_validation: validation_data.parquet

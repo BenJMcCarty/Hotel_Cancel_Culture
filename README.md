@@ -171,7 +171,7 @@ Describe the structure of your repository and its contents, for example:
     └── hotel_bookings.pickle
 ├── img
     └── log_odds.png
-└── bmc_functions
+└── src
     └── __init__.py
     └──classification.py
     └──eda.py
