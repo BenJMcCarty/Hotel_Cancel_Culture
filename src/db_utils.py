@@ -40,9 +40,12 @@ def extract_hotel_number(filepath):
 
 
 
-def add_hotel_number_to_dataframe(input_filepath, output_filepath=None,
-                                  col_hotelnum='HotelNumber', col_id='UUID',
-                                  save_to_parquet=True, engine='pyarrow',
+def add_hotel_number_to_dataframe(input_filepath,
+                                  output_filepath=None,
+                                  col_hotelnum='HotelNumber',
+                                  col_id='UUID',
+                                  save_to_parquet=True,
+                                  engine='pyarrow',
                                   compression='snappy'):
     """
     Add a hotel number and UUIDs to each row of a DataFrame loaded from a Parquet file.
