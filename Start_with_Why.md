@@ -12,7 +12,7 @@
 # What
 *What am I going to do?*
 
-* **Data Conversion:** Convert open-source hotel reservation data into a structured database to showcase my proficiency in database management.
+* **Data Conversion:** Convert open-source hotel reservation data into a structured database.
 * **ETL/EDA/Feature Engineering:** Perform Extract, Transform, Load (ETL) processes; Exploratory Data Analysis (EDA); and feature engineering to prepare the data for analysis.
 * **ML Modeling:** Build machine learning models for:
     * *Regressing Average Daily Rate (ADR):* Predicting the ADR based on various factors.
@@ -35,8 +35,8 @@
 ## Machine Learning Modeling:
 * **ADR Regression Model:** Use regression techniques (e.g., linear regression, random forest) to predict ADR.
 * **Cancellation Classification Model:** Apply classification algorithms (e.g., logistic regression, decision trees) to predict cancellations.
-* **Forecasting Models:** Utilize time series forecasting methods (e.g., ARIMA, Prophet) for future ADR and cancellation predictions.
+* **Forecasting Models:** Utilize time series forecasting methods (e.g., ARIMA, VARMA) for future ADR and cancellation predictions.
 
 ## Communication of Results:
-* **Visualization:** Use tools like Matplotlib, Seaborn, or Power BI to create visualizations.
+* **Visualization:** Use tools like Matplotlib, Seaborn, or Plotly to create visualizations.
 * **Reporting:** Create reports and presentations summarizing the findings and their implications in a way that is accessible to non-technical stakeholders.
