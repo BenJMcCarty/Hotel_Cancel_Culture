@@ -1,4 +1,7 @@
 {
+    "reservation_id": [
+        "UUID"
+    ],
     "booking_details": [
         "LeadTime",
         "ArrivalDateMonth",
