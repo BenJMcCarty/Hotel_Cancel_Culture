@@ -1,0 +1,47 @@
+{
+    "booking_details": [
+        "LeadTime",
+        "ArrivalDateMonth",
+        "ArrivalDateWeekNumber",
+        "ArrivalDateDayOfMonth",
+        "StaysInWeekendNights",
+        "StaysInWeekNights",
+        "Adults",
+        "Children",
+        "Babies",
+        "Country",
+        "MarketSegment",
+        "DistributionChannel",
+        "ReservedRoomType",
+        "DepositType",
+        "Agent",
+        "Company",
+        "CustomerType",
+        "ADR"
+    ],
+    "post_stay_details": [
+        "AssignedRoomType",
+        "BookingChanges",
+        "DaysInWaitingList",
+        "RequiredCarParkingSpaces",
+        "ReservationStatus",
+        "ReservationStatusDate"
+    ],
+    "reservation_specific": [
+        "Meal",
+        "IsRepeatedGuest",
+        "PreviousCancellations",
+        "PreviousBookingsNotCanceled"
+    ],
+    "temporal_features": [
+        "LeadTime",
+        "ArrivalDateYear",
+        "ArrivalDateMonth",
+        "ArrivalDateWeekNumber",
+        "ArrivalDateDayOfMonth",
+        "StaysInWeekendNights",
+        "StaysInWeekNights",
+        "DaysInWaitingList",
+        "ReservationStatusDate"
+    ]
+}
