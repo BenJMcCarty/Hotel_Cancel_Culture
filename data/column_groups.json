@@ -3,6 +3,8 @@
         "UUID"
     ],
     "booking_details": [
+        "UUID",
+        "HotelNumber",
         "LeadTime",
         "ArrivalDateMonth",
         "ArrivalDateWeekNumber",
@@ -23,6 +25,7 @@
         "ADR"
     ],
     "post_stay_details": [
+        "UUID",
         "AssignedRoomType",
         "BookingChanges",
         "DaysInWaitingList",
@@ -31,12 +34,14 @@
         "ReservationStatusDate"
     ],
     "reservation_specific": [
+        "UUID",
         "Meal",
         "IsRepeatedGuest",
         "PreviousCancellations",
         "PreviousBookingsNotCanceled"
     ],
     "temporal_features": [
+        "UUID",
         "LeadTime",
         "ArrivalDateYear",
         "ArrivalDateMonth",
@@ -44,7 +49,6 @@
         "ArrivalDateDayOfMonth",
         "StaysInWeekendNights",
         "StaysInWeekNights",
-        "DaysInWaitingList",
         "ReservationStatusDate"
     ]
 }
