@@ -42,14 +42,6 @@
         "ReservationStatusDate"
     ],
     "new_temporal_features": [
-        "ADR_30d_avg",
-        "ADR_30d_std",
-        "ADR_7d_avg",
-        "ADR_7d_std",
-        "ADR_ewm_3",
-        "ADR_ewm_7",
-        "ADR_lag_1",
-        "ADR_lag_7",
         "ArrivalDateDayName",
         "ArrivalDateMonthName",
         "ArrivalDate_DaysAfterHoliday",
