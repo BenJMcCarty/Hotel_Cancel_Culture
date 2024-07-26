@@ -1,13 +1,8 @@
-![Title Slide](./img/title.png)
-</br>
-</br>
-</br>
-
-# Hotel Cancel Culture
+# Hotel Cancel Culture: Decoding ADR and Predicting Cancellations for Smarter Bookings
 
 ## Project Overview
 
-This project aims to predict the likelihood of reservation cancellations using historical booking data. The project follows the CRISP-DM framework to ensure a comprehensive approach to data mining and machine learning.
+This project aims to predict the likelihood of reservation cancellations and forecast the Average Daily Rate (ADR) using historical booking data. The project follows the CRISP-DM framework to ensure a comprehensive approach to data mining and machine learning.
 
 ## Table of Contents
 
@@ -25,128 +20,114 @@ This project aims to predict the likelihood of reservation cancellations using h
 
 ### Objective
 
-- Understand the factors leading to reservation cancellations.
-- Develop a predictive model to forecast cancellations.
+- Understand the factors leading to reservation cancellations and variations in ADR.
+- Develop predictive models to forecast cancellations and ADR.
 
 ### Business Goals
 
-- Improve resource allocation and inventory management.
-- Enhance customer satisfaction by anticipating and mitigating cancellations.
+- **Improve Resource Allocation and Inventory Management:** By predicting cancellations, the hotel can better manage room availability, reducing the chance of overbooking and improving the overall guest experience.
+- **Enhance Customer Satisfaction:** Anticipating cancellations allows the hotel to implement proactive measures, such as personalized offers or reminders, to reduce cancellation rates.
+- **Optimize Pricing Strategies:** Accurate ADR forecasting helps in dynamic pricing, ensuring competitive pricing while maximizing revenue.
 
 ### Success Criteria
 
-- High accuracy and precision in predicting cancellations.
-- Actionable insights for business strategies.
+- **High Model Accuracy:** The models should accurately predict cancellations and forecast ADR, with a focus on precision and recall to minimize false positives and negatives.
+- **Actionable Insights:** The results should provide clear, actionable insights that can be integrated into business processes and strategies.
 
 ## Data Understanding
 
 ### Data Collection
 
-- Source: [Specify the data source, e.g., hotel booking system, open datasets]
-- Description: [Briefly describe the dataset]
+- **Source:** The dataset is collected from open datasets accessible from [this article](https://www.sciencedirect.com/science/article/pii/S2352340918315191).
+- **Description:** The dataset includes booking details, post-stay details, reservation-specific features, and temporal features.
 
 ### Initial Data Exploration
 
-- Summary statistics
-- Data visualization
-- Identification of key features and potential issues
+- **Summary Statistics:** A comprehensive summary of the data, including mean, median, standard deviation, etc.
+- **Data Visualization:** Visualizations such as boxplots to understand data distribution and relationships.
+- **Identification of Key Features:** Initial identification of important features and potential issues, such as missing values or outliers.
 
 ### Data Description
 
-- Columns and data types
-- Missing values analysis
-- Preliminary observations
+- **Columns and Data Types:** Detailed description of each column in the dataset.
+- **Missing Values Analysis:** Analysis of missing values and strategies for handling them.
+- **Preliminary Observations:** Key insights from initial data exploration.
 
 ## Data Preparation
 
-### Data Cleaning
+### ETL Process
 
-- Handling missing values
-- Correcting data types
-- Removing duplicates
+- **Converting CSVs to Feather Format:** The raw data in CSV format is converted to a more efficient Feather format for faster processing.
+- **Adding UUID for Reservation IDs:** Unique identifiers (UUIDs) are generated for each reservation to ensure data integrity and facilitate data management.
+
+### Exploratory Data Analysis (EDA)
+
+- **Summary Statistics:** Detailed statistical summary of the dataset.
+- **Data Visualization:** Creating visualizations to understand data patterns and distributions.
+- **Identification of Key Features:** Identifying significant features that influence cancellations and ADR.
+
+### Baseline Models
+
+- **Baseline Regression Model for ADR:** A Random Forest Regression model is created to provide a baseline for forecasting ADR.
+- **Baseline Classification Model to Predict Cancellations:** A Random Forest Classification model is established as a baseline for predicting cancellations.
 
 ### Feature Engineering
 
-- Creating new features from existing data
-- Encoding categorical variables
-- Scaling and normalizing data
-
-### Data Splitting
-
-- Training and testing split
-- Validation strategy
+- **Generating Temporal and Date Features:** Extracting date components such as year, month, and day to create new temporal features.
+- **Calculating Occupancies:** Calculating the total occupancy by combining adults, children, and babies for each reservation.
+- **Exploding Reservation Data:** Transforming reservation data to create discrete entries for each day of the reservation period.
 
 ## Modeling
 
-### Model Selection
+### Training Models
 
-- Justification for chosen algorithms
-- Baseline model performance
-
-### Model Training
-
-- Hyperparameter tuning
-- Cross-validation results
-
-### Model Comparison
-
-- Performance metrics for different models
-- Selection of the best model based on metrics
+- **Regressing ADR:** Advanced regression models, such as RandomForestRegressor, are trained to forecast ADR.
+- **Predicting Cancellations:** Advanced classification models, such as RandomForestClassifier, are trained to predict reservation cancellations.
 
 ## Evaluation
 
 ### Model Performance
 
-- Accuracy, precision, recall, F1-score, ROC-AUC
-- Confusion matrix analysis
+- **Classification Metrics:** Accuracy, precision, recall, and F1-score are used to evaluate the classification model.
+- **Regression Metrics:** Mean Absolute Error (MAE), Median Absolute Error (MedAE) and Mean Absolute Percentage Error (MAPE) are used to evaluate the regression model.
+- **Confusion Matrix Analysis:** Detailed analysis of the confusion matrix to understand the classification model's performance.
 
 ### Business Evaluation
 
-- Impact of model predictions on business processes
-- Cost-benefit analysis of the model implementation
-
-## Deployment
-
-### Deployment Strategy
-
-- Model integration into business systems
-- Automation of prediction processes
-
-### Monitoring and Maintenance
-
-- Performance monitoring
-- Regular updates and retraining
+- **Impact on Business Processes:** Assessing how model predictions can improve business operations and decision-making.
+- **Cost-Benefit Analysis:** Evaluating the financial implications of implementing the models, considering potential revenue increases.
 
 ## Results and Insights
 
 ### Key Findings
 
-- Important features influencing cancellations
-- Patterns and trends discovered
+- **Important Features:** Identification of key features that significantly influence cancellations and ADR.
+- **Patterns and Trends:** Discovery of patterns and trends that can inform business strategies.
 
 ### Business Recommendations
 
-- Strategies to reduce cancellations
-- Potential improvements in customer relationship management
+- **Reducing Cancellations:** Strategies to reduce cancellations, such as targeted marketing and personalized offers.
+- **Optimizing Pricing:** Recommendations for optimizing pricing strategies based on ADR forecasts.
+- **Customer Relationship Management:** Enhancing customer relationship management to improve satisfaction and reduce cancellations.
 
 ## Conclusion
 
 ### Project Summary
 
-- Overview of project stages and outcomes
-- Reflection on success criteria and achievements
+- **Overview of Project Stages and Outcomes:** Summary of the steps taken and the results achieved.
+- **Reflection on Success Criteria and Achievements:** Evaluation of the project's success based on the defined criteria.
 
 ### Future Work
 
-- Suggestions for further research
-- Potential improvements in the model
+- **Suggestions for Further Research:** Recommendations for future research and improvements to the models.
+- **Potential Model Improvements:** Potential enhancements to the models to increase their accuracy and utility.
 
 ## Appendices
 
-- Data dictionary
-- Detailed performance metrics
-- Code snippets
-- References and resources
+- **Data Dictionary:** Detailed descriptions of all dataset columns.
+- **Detailed Performance Metrics:** Comprehensive metrics and evaluation results.
+- **Code Snippets:** Important code snippets used in the project.
+- **References and Resources:** References and additional resources related to the project.
 
 ---
 
@@ -154,27 +135,17 @@ This project aims to predict the likelihood of reservation cancellations using h
 
 ### Prerequisites
 
-- List of software and libraries required (e.g., Python, pandas, scikit-learn)
+- **Software and Libraries:** List of required software and libraries (e.g., Python, pandas, scikit-learn).
 
 ### Installation
 
-```bash
-# Example of installation commands
-pip install -r requirements.txt
-```
+- **Installation Commands:** Commands to install necessary libraries and dependencies.
 
 ### Running the Scripts
 
-```bash
-# Command to run the data preparation script
-python data_preparation.py
-
-# Command to train the model
-python train_model.py
-
-# Command to evaluate the model
-python evaluate_model.py
-```
+- **Data Preparation:** Instructions to run the data preparation script.
+- **Model Training:** Instructions to run the model training script.
+- **Model Evaluation:** Instructions to run the model evaluation script.
 
 ### Contact Information
 
