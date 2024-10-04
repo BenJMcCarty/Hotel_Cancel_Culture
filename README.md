@@ -4,9 +4,13 @@
 </br>
 
 ---
+</br>
+
+# **NOTE: CURRENTLY UNDERGOING REVISIONS; CODE, RESULTS, AND README TO CHANGE WITHOUT WARNING!**
 
 </br>
-</br>
+
+---
 
 # Hotel Cancel Culture
 
