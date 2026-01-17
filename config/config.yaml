@@ -1,0 +1,25 @@
+# Configuration file for Hotel Reservation Forecasting
+
+# Data source
+data:
+  source_url: "https://ars.els-cdn.com/content/image/1-s2.0-S2352340918315191-mmc2.zip"
+  raw_data_path__h1: "../data/raw/H1.parquet"
+  raw_data_path__h2: "../data/raw/H2.parquet"
+  raw_data_path__combined: "../data/raw/combined.parquet"
+  
+# Data transformation
+transformation:
+  arrival_column: "arrival_date"
+  departure_column: "departure_date"
+  
+  
+# Model parameters
+model:
+  seasonal: true
+  seasonal_period: 7
+  
+# Output
+output:
+  model_path: "models/arima_model.pkl"
+  forecast_path: "reports/forecast_results.csv"
+  figures_path: "reports/figures/"
