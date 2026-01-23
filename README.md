@@ -1,16 +1,7 @@
 ![Title Slide](./img/title.png)
 </br>
 </br>
-</br>
 
----
-</br>
-
-# **NOTE: CURRENTLY UNDERGOING REVISIONS; CODE, RESULTS, AND README TO CHANGE WITHOUT WARNING!**
-
-</br>
-
----
 
 # Hotel Cancel Culture
 
@@ -18,14 +9,14 @@
 
 Author: Ben McCarty
 
----
+
 ## Overview
 
 > *Have you ever booked a reservation at a hotel, only to find out that your reservation was relocated somewhere else? Or tried to book a reservation for a big concert or event, only to find out the hotel is sold out?*
 
 **Every aspect of hospitality depends on accurately anticipating business demand: how many rooms to clean; how many rooms are available to sell; what would be the best rate; and how to bring it all together to make every guest satisfied.** Proper forecasting is critical to every department and staff member, and to generate our forecasts, hotel managers need to know how many guests will cancel prior to arrival. Using data from two European hotels, I developed a model to predict whether a given reservation would cancel based on 30 different reservation details. My results highlighted three features as the strongest predictors of cancellations, and the results may surprise you!
 
----
+
 ## Business Problem
 
 Hotels sell more than room rentals - they sell an *experience.* As a six-year veteran of hotel Operations teams, I learned there is a constant balancing act performed on a daily basis: **how can we sell as many rooms as possible without over-booking?**
@@ -40,7 +31,7 @@ Beyond the costs of "walking" guests, hotel teams need precise forecasts of how 
 
 My newly-developed data science skills give me the techniques I need to predict cancellations, but I still rely on one key thing: *the data*.
 
----
+
 ## Data
 
 
@@ -75,7 +66,7 @@ As mentioned in the abstract, this reservation data was originally sourced from 
 
 My target variable is "`is_canceled`," representing whether the reservation actualized (stayed and checked-out) or if the reservation cancelled. These cancellations include a negligible number of no-show reservations and are considered to be canceled for analysis and predictions.
 
----
+
 ## Methods
 
 ### EDA and Prep Work
@@ -87,14 +78,14 @@ My preparations included:
 
 Additionally, my exploratory analysis included statistical overviews each characteristic's data, giving insight into extreme values as well as highlighting such large categorical features.
 
----
+
 ## Modeling and Evaluating Results
 
 I chose to use a Random Forest Classifier for my final predictions as they handle extreme/irregular data better than logistic regressions (e.g. a guest had an extreme number of requests; rates signficantly higher than average due to major events; frequently booking and canceling reservations).
 
 However, the results are more difficult to interpret, requiring additional tools to interpret effectively. I used SHAP visualization techniques to help identify the most important aspects of a guest's stay and their impact.
 
----
+
 ## Results
 
 **Results**
@@ -113,7 +104,7 @@ However, the results are more difficult to interpret, requiring additional tools
 
 These results are dependent on availability of information - some information is not consistently available, or available at all for some hotels. Furthermore, these results assume relatively stable trends as they depend on historical records. Anomalies such as COVID-19 cause radical shifts in the nature of travel, potentially requiring hotel teams to ignore the old data and assumptions. Finally, this analysis does not take into consideration demand generators occurring close to booking - bad weather, event cancellations, etc. may increase cancellations *or cause surges in bookings to avoid icy roads or power outages.*
 
----
+
 ## Conclusions
 
 **RECOMMENDATIONS**
@@ -123,8 +114,6 @@ Based on my results, I recommend these hotels should do the following:
 * Contact guests with long lead times to confirm bookings
 * Monitor bookings from Portugal versus other countries
 * Limit availability of non-refundable rates to prevent/limit risk of cancellations
-
----
 
 **Considerations**
 
@@ -145,10 +134,9 @@ Based on my results, I recommend these hotels should do the following:
     * Add a new feature consisting of the odds of each feature to cancel
     * Perform uni- and multi-variate time series modeling to forecast cancellations in the future
 
----
 ## For More Information
 
-Please review our full analysis in [the main Jupyter Notebook](./Classification_Modeling.ipynb) or my [presentation](./Hotel_Cancel_Culture_Presentation.pdf).
+Please review our full analysis in the [notebooks directory](./notebooks/) or my [presentation](./presentations/Hotel_Cancel_Culture_Presentation.pdf).
 
 For any additional questions, please reach out to me via:
 
@@ -158,28 +146,57 @@ For any additional questions, please reach out to me via:
 
 - [GitHub](www.github.com/BenJMcCarty)
 
----
+
 ## Repository Structure
 
-Describe the structure of your repository and its contents, for example:
+This project follows a structured notebook-based workflow organized by the CRISP-DM framework:
 
 ```
 ├── README.md
-├── Classification_Modeling.ipynb
-├── EDA_for_Classification.ipynb
-├── Hotel_Cancel_Culture_Presentation.pdf
-├── data
-    └── data_prepped.pickle
-    └── data_no_assigned.pickle
-    └── hotel_bookings.csv.gz
-    └── hotel_bookings.pickle
-├── img
-    └── log_odds.png
-└── src
-    └── __init__.py
-    └──classification.py
-    └──eda.py
-    └──functions.py
-    └──regression.py
-    └──time_series_modeling.py
+├── config/
+│   └── config.yaml
+├── data/
+│   ├── Feature_Dictionary.md
+│   ├── 3.1_temporally_updated_data.parquet
+│   ├── 3.2_data_with_occupancies.parquet
+│   ├── raw/
+│   │   ├── H1.csv
+│   │   ├── H2.csv
+│   │   ├── H1.parquet
+│   │   ├── H2.parquet
+│   │   └── combined.parquet
+│   └── supplemental/
+│       └── [26 supplemental data files including economic, tourism, and weather data]
+├── img/
+│   ├── title.png
+│   ├── SHAP_Results.png
+│   ├── SHAP_Results_H1_HGBC.png
+│   ├── SHAP_Results_H1_RFC.png
+│   └── SHAP_Results_H2.png
+├── notebooks/
+│   ├── 1.0_Data_Extraction_and_Transformation/
+│   │   ├── 1.1_Source_Data.ipynb
+│   │   └── 1.2_Concatenate_Data.ipynb
+│   ├── 2.0_EDA_and_Baseline_Models/
+│   │   ├── 2.1_Initial_EDA.ipynb
+│   │   ├── 2.2.1_Baseline_Classification_Modeling_H1.ipynb
+│   │   └── 2.2.2_Baseline_Classification_Modeling_H2.ipynb
+│   ├── 3.0_Feature_Engineering/
+│   │   ├── 3.1_Temporal_Features.ipynb
+│   │   └── 3.2_Occupancy_Calculations.ipynb
+│   └── 4.0_Advanced_Modeling/
+│       ├── 4.1.1_Classifying_Cancellations.ipynb
+│       ├── 4.2.1_Classifying_Cancellations_-_Hotel_1.ipynb
+│       ├── 4.2.1_Classifying_Cancellations_-_Hotel_2.ipynb
+├── presentations/
+│   ├── Hotel_Cancel_Culture_Presentation.pdf
+│   └── Hotel_Cancel_Culture_Presentation.pptx
+└── src/
+    ├── __init__.py
+    ├── classification.py
+    ├── data_preprocessing.py
+    ├── db_utils.py
+    ├── eda.py
+    ├── functions.py
+    ├── regression.py
 ```
